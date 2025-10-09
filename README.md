@@ -11,6 +11,31 @@ It is important to have character `-` between serbian and hungarian language.
 
 `pip install -r requirements.txt`
 
+
+
+# Struct of directories
+
+```javascript
+ksoundlingo/
+├─ requirements.txt
+├─ pyproject.toml              
+└─ kslingo/                     
+   ├─ __init__.py
+   ├─ __main__.py               
+   ├─ cli.py                    
+   ├─ version.py
+   ├─ utils/
+   │  ├─ __init__.py
+   │  └─ fs.py                  
+   ├─ audio/
+   │  ├─ __init__.py
+   │  └─ tts.py                 
+   └─ parsers/
+      ├─ __init__.py
+      ├─ txt.py                 
+      └─ markdown.py            
+```
+
 # How to run?
 
 **CHECK VERSION**
@@ -22,13 +47,10 @@ Example: `py main.py --version `
 
 With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
 
-Example: 
+Example:
 
 ```bash
-py main.py \
-   --txt ./test/input.txt \
-   --learn hu \
-   --native sr
+py -m kslingo    --txt ./test/input.txt    --learn hu    --native sr
 
 && ffplay simple.mp3
 ```
@@ -38,10 +60,7 @@ py main.py \
 Example:
 
 ```bash
-py main.py \
-   --markdown ./test/madjarski.md \
-   --learn hu \
-   --native sr
+py -m kslingo   --markdown ./test/madjarski.md   --learn hu   --native sr
 ```
 
 
