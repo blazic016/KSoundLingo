@@ -7,9 +7,11 @@ import argparse
 import re
 from version import __version__
 
-def ReadFromInputFile():
+def ReadFromTxtFile(input_file):
+    #TODO: Napravi sanity jel inputfile .txt file
+    
     phrases = []
-    with open("input.txt", "r", encoding="utf-8") as f:
+    with open(input_file, "r", encoding="utf-8") as f:
         for  line in f:
             line = line.replace("–", "-")
             if "-" in  line:
@@ -75,6 +77,8 @@ def clean_markdown(input_path, output_path):
 def ReadFromMarkdownFile(inputfile, output):
     print("start ReadFromMarkdownFile")
 
+    #TODO: Napravi sanity jel inputfile .md file
+
     cleaned_md=f"{output}/cleaned.md"
     phrases = []
     current_section = []
@@ -111,9 +115,8 @@ def ReadFromMarkdownFile(inputfile, output):
 
     return phrases
 
-
-def Generate_Audio_mp3(phrases, output_file, learn_lang, native_lang):
-    print(f"start Generate_Audio_mp3 {learn_lang}->{native_lang}")
+def Generate_mp3_from_Phrases(phrases, out_file, learn_lang, native_lang):
+    print(f"start Generate_mp3_from_Phrases {learn_lang}->{native_lang}")
 
     wav_path = resource_path("assets/end_sound.wav")
     end_sound = AudioSegment.from_file(wav_path)
@@ -141,12 +144,13 @@ def Generate_Audio_mp3(phrases, output_file, learn_lang, native_lang):
         final_audio += hu_audio + AudioSegment.silent(duration=800)
         final_audio += end_sound + AudioSegment.silent(duration=1200)
 
-    final_audio.export(output_file, format="mp3")
+# final_audio.export(out_dir + "/" + out_file, format="mp3")
+    final_audio.export(out_file, format="mp3")
 
     if os.path.exists("/tmp/temp_lang_audio_gen"):
         shutil.rmtree("/tmp/temp_lang_audio_gen")
 
-    print(f"\nFinish! File saved: {output_file}")
+    print(f"\nFinish! File saved: {out_file}")
 
 
 SEP = r"\s[-–]\s"  # split " - " or " – "
@@ -158,9 +162,17 @@ def split_pair(text):
     # fallback: if not exist separator, then use the same text for HU and SR
     return text.strip(), text.strip()
 
-def Generate_Markdown_Audio_mp3(phrases, output, learn_lang, native_lang):
+
+def Generate_Txt_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
+    print("start Generate_Txt_Audio_mp3")
+
+    out_file = f"{out_dir}/simple.mp3"
+    Generate_mp3_from_Phrases(phrases, out_file, learn_lang, native_lang)
+
+
+def Generate_Markdown_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
     print("start Generate_Markdown_Audio_mp3")
-    os.makedirs("output", exist_ok=True)
+    # os.makedirs("output", exist_ok=True)
 
     for i, section in enumerate(phrases):
         if not section:
@@ -189,34 +201,40 @@ def Generate_Markdown_Audio_mp3(phrases, output, learn_lang, native_lang):
             print(f"SKIP section (no valid phrases): {section_title}")
             continue
 
-        out_file = f"{output}/{i:02d}_{section_title}.mp3"
-        Generate_Audio_mp3(pairs, out_file, learn_lang, native_lang)
+        out_file = f"{out_dir}/{i:02d}_{section_title}.mp3"
+
+        Generate_mp3_from_Phrases(pairs, out_file, learn_lang, native_lang)
 
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Magyar Audio Generator")
-    parser.add_argument("--simple", action="store_true", help="Run script in simple mode.")
-    parser.add_argument("--markdown", metavar="FILE", help="Run script in markdown mode with input file.")
-    parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    parser.add_argument("--learn", help="Language which you learning ")
-    parser.add_argument("--native",  help="Yourself mother language")
+    parser.add_argument("--txt",        metavar="FILE", help="Run script in simple txt mode.")
+    parser.add_argument("--markdown",   metavar="FILE", help="Run script in markdown mode with input file.")
+    parser.add_argument("--output",     metavar="DIR", default="output", help="Output directory (default: ./output)")
+    parser.add_argument("--version",    action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument("--learn",      help="Language which you learning ")
+    parser.add_argument("--native",     help="Yourself mother language")
     args = parser.parse_args()
 
     print(f"Magyar Audio Generator v{__version__}")
 
-    if args.simple:
-        phrases = ReadFromInputFile()
-        Generate_Audio_mp3(phrases, "simple.mp3")
+    if args.txt:
+        input_path = args.txt
+        output_dir = args.output
+        os.makedirs(output_dir, exist_ok=True)
+        phrases = ReadFromTxtFile(input_path)
+        Generate_Txt_Audio_mp3(phrases, output_dir, learn_lang=args.learn, native_lang=args.native)
 
     elif args.markdown:
         input_path = args.markdown
-        phrases = ReadFromMarkdownFile(input_path, args.output)
+        output_dir = args.output
+        os.makedirs(output_dir, exist_ok=True)
+        phrases = ReadFromMarkdownFile(input_path, output_dir)
         if not phrases:
             print("ERROR: phrases is empty array!")
-        Generate_Markdown_Audio_mp3(phrases, args.output, learn_lang=args.learn, native_lang=args.native)
+        Generate_Markdown_Audio_mp3(phrases, output_dir, learn_lang=args.learn, native_lang=args.native)
 
     else:
         print("Please choose running mode!")

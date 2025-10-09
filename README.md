@@ -6,6 +6,11 @@
 This script reads phrases from input.txt and converts them into an audio MP3 file.
 It is important to have character `-` between serbian and hungarian language.
 
+
+# Install requirments
+
+`pip install -r requirements.txt`
+
 # How to run?
 
 **CHECK VERSION**
@@ -15,19 +20,26 @@ Example: `py main.py --version `
 
 **SIMPLE MODE**
 
-With option --simple it is read from the input.txt file, and store mp3 in simple.mp3 file
+With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
 
-Example: `py main.py --simple  && ffplay simple.mp3 `
+Example: 
 
+```bash
+py main.py \
+   --txt ./test/input.txt \
+   --learn hu \
+   --native sr
+
+&& ffplay simple.mp3
+```
 
 **MARKDOWN MODE**
 
 Example:
 
 ```bash
-py magyar_audio_generator.py \
-   --markdown ~/Mega/Beleske/OBSIDIAN/Readme-OBS/MADJARSKI.md \
-   --output ~/Music/Madjarski
+py main.py \
+   --markdown ./test/madjarski.md \
    --learn hu \
    --native sr
 ```
