@@ -20,5 +20,6 @@ def ReadFromTxtFile(input_file):
                 phrases.append((left, right))
 
     # only debug
-    print(phrases)
+    # print(phrases)
+    
     return phrases

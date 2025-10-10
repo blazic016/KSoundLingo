@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import tempfile
 
 
 def validate_file(input_file: str, ext: str):
@@ -54,3 +55,12 @@ def remove_dir_if_exists(path: str):
     """
     if os.path.exists(path):
         shutil.rmtree(path)
+        print(f"Removed directory : {path}")
+        
+        
+def create_temp_dir(prefix="kslingo_") -> str:
+    """
+    Creates a unique temporary directory and returns its path.
+    Default location is system temp (e.g., /tmp/...).
+    """
+    return tempfile.mkdtemp(prefix=prefix)

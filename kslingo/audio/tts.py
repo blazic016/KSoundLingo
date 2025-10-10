@@ -2,7 +2,7 @@ from gtts import gTTS
 from pydub import AudioSegment
 from kslingo.utils.fs import get_resource_path
 from kslingo.utils.fs import ensure_dir
-from kslingo.utils.fs import remove_dir_if_exists
+from kslingo.utils.fs import create_temp_dir, remove_dir_if_exists
 from kslingo.utils.text import split_pair
 
 
@@ -52,38 +52,40 @@ def Generate_Markdown_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
 
 
 def generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang):
-    print(f"start generate_mp3_from_phrases {learn_lang}->{native_lang}")
+    print(f"start generate_mp3_from_phrases {learn_lang} -> {native_lang}")
 
     wav_path = get_resource_path("assets/end_sound.wav")
     end_sound = AudioSegment.from_file(wav_path)
     end_sound = end_sound.apply_gain(-10)
-
     final_audio = AudioSegment.silent(duration=1000)
-    ensure_dir("/tmp/temp_lang_audio_gen")
+    temp_dir = create_temp_dir()
     
+    print(f"Temp directory created : {temp_dir}")
+    
+    # sanity
+    ensure_dir(temp_dir)
 
-    for i, (hu, sr) in enumerate(phrases):
-        print(f"Generating: {hu} - {sr}")
-        # TODO: GENERISI RANDOM DIREKTORIJUM I TAJ DIREKTORIJUM KORISTI
-        # Bitno je da nije fixan dir, jer u suprotnom ako se pokrene 2x istovremeno, zbunice se. 
-        hu_path = f"/tmp/temp_lang_audio_gen/hu_{i}.mp3"
-        sr_path = f"/tmp/temp_lang_audio_gen/sr_{i}.mp3"
+    for i, (left, right) in enumerate(phrases):
+        print(f"Generating: {left} - {right}")
+        
+        left_path = f"{temp_dir}/hu_{i}.mp3"
+        right_path = f"{temp_dir}/sr_{i}.mp3"
 
-        gTTS(text=hu, lang=learn_lang).save(hu_path)
-        gTTS(text=sr, lang=native_lang).save(sr_path)
+        gTTS(text=left, lang=learn_lang).save(left_path)
+        gTTS(text=right, lang=native_lang).save(right_path)
 
-        hu_audio = AudioSegment.from_file(hu_path)
-        sr_audio = AudioSegment.from_file(sr_path)
+        left_audio = AudioSegment.from_file(left_path)
+        right_audio = AudioSegment.from_file(right_path)
 
         # HU -> SR -> HU -> End Sound
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
-        final_audio += sr_audio + AudioSegment.silent(duration=800)
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
+        final_audio += left_audio + AudioSegment.silent(duration=800)
+        final_audio += right_audio + AudioSegment.silent(duration=800)
+        final_audio += left_audio + AudioSegment.silent(duration=800)
         final_audio += end_sound + AudioSegment.silent(duration=1200)
 
     final_audio.export(out_file, format="mp3")
 
-    remove_dir_if_exists("/tmp/temp_lang_audio_gen")
+    remove_dir_if_exists(temp_dir)
 
     print(f"\nFinish! File saved: {out_file}")
 

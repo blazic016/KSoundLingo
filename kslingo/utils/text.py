@@ -24,7 +24,7 @@ def normalize_separator(text: str) -> str:
     text = re.sub(r"\s*=\s*", " - ", text)
     
     # only debug
-    print(text)
+    # print(text)
 
     return text
 
