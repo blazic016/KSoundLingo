@@ -40,29 +40,41 @@ ksoundlingo/
 
 **CHECK VERSION**
 
-Example: `py main.py --version `
+Example:
+```bash
+python3 -m kslingo --version
+```
 
-
-**SIMPLE MODE**
+**AUDIO TXT MODE**
 
 With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
 
 Example:
-
 ```bash
-py -m kslingo    --txt ./test/input.txt    --learn hu    --native sr
-
+python3 -m kslingo audio --txt ./test/input.txt --learn hu --native sr
 && ffplay output/simple.mp3
 ```
 
-**MARKDOWN MODE**
+**AUDIO MARKDOWN MODE**
 
 Example:
-
 ```bash
-py -m kslingo   --markdown ./test/madjarski.md   --learn hu   --native sr
+python3 -m kslingo audio --markdown ./test/madjarski.md --learn hu --native sr
 ```
 
+**CONVERT JSON to MARKDOWN**
+
+Example:
+```bash
+python3 -m kslingo convert json2md ./test/test.json --learn hu --native sr
+```
+
+**CONVERT MARKDOWN to JSON**
+
+Example:
+```bash
+python3 -m kslingo convert md2json ./test/madjarski-desc.md --learn hu --native sr
+```
 
 # How to build source code?
 
