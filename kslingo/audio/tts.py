@@ -4,21 +4,37 @@ from kslingo.utils.fs import get_resource_path
 from kslingo.utils.fs import ensure_dir
 from kslingo.utils.fs import create_temp_dir, remove_dir_if_exists
 from kslingo.utils.text import split_pair
+from kslingo.parsers.txt import ReadFromTxtFile
+from kslingo.parsers.markdown import ReadFromMarkdownFile
 
 
-
-def Generate_Txt_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
+def Generate_Txt_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
     print("start Generate_Txt_Audio_mp3")
 
     out_file = f"{out_dir}/simple.mp3"
-    
+
+    # sanity
+    ensure_dir(out_dir)
+        
+    phrases = ReadFromTxtFile(input_file)
+    if not phrases:
+        print("ERROR: phrases is empty array!")
+        return
+        
     generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang)
     
 
-def Generate_Markdown_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
+def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
     print("start Generate_Markdown_Audio_mp3")
-    # os.makedirs("output", exist_ok=True)
 
+    # sanity
+    ensure_dir(out_dir)
+
+    phrases = ReadFromMarkdownFile(input_file, out_dir)
+    if not phrases:
+        print("ERROR: phrases is empty array!")
+        return
+            
     for i, section in enumerate(phrases):
         if not section:
             continue

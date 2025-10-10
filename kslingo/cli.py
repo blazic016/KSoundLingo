@@ -1,8 +1,6 @@
 import argparse
 import os
 from kslingo.version import __version__
-from kslingo.parsers.txt import ReadFromTxtFile
-from kslingo.parsers.markdown import ReadFromMarkdownFile
 from kslingo.audio.tts import Generate_Txt_Audio_mp3, Generate_Markdown_Audio_mp3
 
 def main():
@@ -21,14 +19,10 @@ def main():
 
     if args.txt:
         print("Running in TXT mode")
-        phrases = ReadFromTxtFile(args.txt)
-        Generate_Txt_Audio_mp3(phrases, args.output, args.learn, args.native)
+        Generate_Txt_Audio_mp3(args.txt, args.output, args.learn, args.native)
 
     elif args.markdown:
         print("Running in MARKDOWN mode")
-        phrases = ReadFromMarkdownFile(args.markdown, args.output)
-        if not phrases:
-            print("ERROR: phrases is empty array!")
-        Generate_Markdown_Audio_mp3(phrases, args.output, args.learn, args.native)
+        Generate_Markdown_Audio_mp3(args.markdown, args.output, args.learn, args.native)
     else:
         print("Please choose running mode!")
