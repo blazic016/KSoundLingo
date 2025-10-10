@@ -17,16 +17,16 @@ EXAMPLE OF ENABLED WORD
 	E - indicates that the item is enabled for markdown and audio generation.
 
 EXAMPLE OF DISABLED WORD
-	%%A1,W,E%% Target Word - Native Word
+	%%A1,W,D%% Target Word - Native Word
 	A1 - means level A1.
 	W - **means that it is a word (not a phrase).**
-	E - means that is Disabled for generating markdown and audio sound.
+	D - means that is disabled for generating markdown and audio sound.
 
 EXAMPLE OF ENABLED PHRASE
 	%%A1,P,E%% Target Phrase - Native Phrase
 	A1 - means level A1.
 	P - means that it is a prahse (not a word).
-	D - indicates that the item is disabled for markdown and audio generation.
+	E - indicates that the item is disabled for markdown and audio generation.
 	
 	
 CATEGORY TEMPLATE

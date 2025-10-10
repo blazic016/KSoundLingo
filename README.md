@@ -76,6 +76,14 @@ Example:
 python3 -m kslingo convert md2json ./templates/template_hu.md --learn hu --native sr
 ```
 
+**ADD PREFIX ON MARKDOWN**
+Default prefix is: `%%A2,W,D%%`
+Example:
+```bash
+python3 -m kslingo convert prefix Madjarski-ksound.md 
+```
+
+
 # How to build source code?
 
 LINUX

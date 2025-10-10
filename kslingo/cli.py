@@ -3,8 +3,7 @@ import os
 from kslingo.version import __version__
 from kslingo.audio.tts import Generate_Txt_Audio_mp3, Generate_Markdown_Audio_mp3
 from kslingo.utils.fs import ensure_dir
-from kslingo.convert.json_to_markdown import Convert_json2md
-from kslingo.convert.markdown_to_json import Convert_md2json
+from kslingo.convert.file import add_prefix_on_markdown, Convert_json2md, Convert_md2json
 
 def main():
     parser = argparse.ArgumentParser(prog="kslingo", description="Multilingual audio generator and converter")
@@ -38,6 +37,12 @@ def main():
     md2json_parser.add_argument("--learn", required=True, help="First language")
     md2json_parser.add_argument("--native", required=True, help="Second language")
     
+    # --- PREFIX COMMAND---
+    prefix_parser = convert_subparsers.add_parser("prefix", help="Add metadata prefix to Markdown phrases.")
+    prefix_parser.add_argument("input", help="Input markdown file")
+    prefix_parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
+
+
     args = parser.parse_args()
     
     print(f"kslingo v{__version__}")
@@ -57,16 +62,19 @@ def main():
     elif args.command == "convert":
         ensure_dir(args.output)
         if args.convert_command == "json2md":
-            output_path = f"{args.output}/converted_from_json.md"
-            print(f"Markdown output path {output_path}")
-            Convert_json2md(args.input, output_path, args.learn, args.native)
+            output_file = f"{args.output}/converted_from_json.md"
+            Convert_json2md(args.input, output_file, args.learn, args.native)
 
         elif args.convert_command == "md2json":
-            output_path = f"{args.output}/converted_from_markdown.json"
-            print(f"JSON output path {output_path}")
-            Convert_md2json(args.input, output_path, args.learn, args.native)
+            output_file = f"{args.output}/converted_from_markdown.json"
+            Convert_md2json(args.input, output_file, args.learn, args.native)
+        elif args.convert_command == "prefix":
+            ensure_dir(args.output)
+            output_file = f"{args.output}/prefixed.md"
+            prefix = "%%A2,W,D%%"
+            add_prefix_on_markdown(args.input, output_file, prefix)
+         
         else:
             print("Error: --json2md or --md2json is required with 'convert' command")
-            
     else:
-        print("Please choose running mode 'audio' or 'convert")
+        print("Please choose running mode 'audio', 'convert' or 'prefix'" )

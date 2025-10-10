@@ -57,3 +57,49 @@ def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native
     
     with open(md_output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
+
+    print(f"Created markdown file : {md_output_path}")
+    
+def add_prefix_on_markdown(md_input_path: str, md_output_path: str, prefix: str = "%%A2,W,D%%") -> None:
+    """
+    Adds a given prefix to all phrase lines in a Markdown file, 
+    excluding category headers (lines starting with '###') and empty lines.
+
+    This is useful for tagging phrases with metadata (e.g., level, type, status)
+    in preparation for conversion to structured formats like JSON.
+
+    Args:
+        md_input_path (str): Path to the original Markdown (.md) file.
+        md_output_path (str): Path where the modified Markdown file will be saved.
+        prefix (str): The prefix string to prepend to each phrase line.
+    """
+    
+    # TODO: za sada bezuslovno ubacuje prefix, napravi da ubacuje samo ako ga nema.
+    
+    input_path = Path(md_input_path)
+    output_path = Path(md_output_path)
+
+    with open(input_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    updated_lines = []
+    for line in lines:
+        stripped = line.strip()
+
+        if not stripped:
+            updated_lines.append("")
+        elif stripped.startswith("###"):
+            updated_lines.append(line.rstrip())
+        else:
+            updated_lines.append(f"{prefix} {line.strip()}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(updated_lines) + "\n")
+        
+    print(f"Created prefixed markdown file : {output_path}")
+    
+
+def Convert_md2json(input, output_path, learn, native):
+    print("start Convert_json_to_markdown")
+    print(f"input={input} output_path={output_path} learn={learn} native={native}")
