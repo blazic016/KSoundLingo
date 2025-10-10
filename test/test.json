@@ -1,0 +1,50 @@
+[
+    {
+        "category": {
+            "hu": "Köszönések",
+            "sr": "Pozdravi",
+            "en": "Greetings"
+        },
+        "phrases": [
+            {
+                "level": "A1",
+                "enabled": true,
+                "isword": true,
+                "translations": {
+                    "hu": "Szia",
+                    "sr": "Zdravo",
+                    "en": "Hello"
+                }
+            },
+            {
+                "level": "A2",
+                "enabled": false,
+                "isword": false,
+                "translations": {
+                    "hu": "Jó estét",
+                    "sr": "Dobro veče",
+                    "en": "Good evening"
+                }
+            }
+        ]
+    },
+    {
+        "category": {
+            "hu": "alapvető kifejezések",
+            "sr": "Osnovne fraze",
+            "en": "Basic phrases"
+        },
+        "phrases": [
+            {
+                "level": "A1",
+                "enabled": true,
+                "isword": false,
+                "translations": {
+                    "hu": "Hogy vagy?",
+                    "sr": "Kako si?",
+                    "en": "How are you?"
+                }
+            }
+        ]
+    }
+]

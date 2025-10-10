@@ -1,0 +1,1 @@
+# definisati funkcije za citanje u program

@@ -96,3 +96,8 @@ generisi_madjarski_mp3
 ```
 
 
+# ABOUT JSON
+- The **category** always be presented in markdown, and always be generated sound translation.
+That is the reason why not presneted in category *(.josn file)* field like: `level, enabled, isword`. Every category have translation for every defined language.
+
+
