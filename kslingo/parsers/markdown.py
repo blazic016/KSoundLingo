@@ -1,6 +1,10 @@
 import os
 import re
 from kslingo.utils.fs import validate_file
+from kslingo.utils.text import remove_between
+from kslingo.utils.text import normalize_markdown_title
+from kslingo.utils.text import remove_markdown_bold
+from kslingo.utils.text import normalize_separator
 
 def clean_markdown(input_path, output_path):
     
@@ -14,38 +18,34 @@ def clean_markdown(input_path, output_path):
     
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
-            stripped = line.strip()
+            line = line.strip()
 
-            # toggle code block
-            if stripped.startswith("```"):
+            # 1) ignore between ```...``
+            if line.startswith("```"):
                 inside_code_block = not inside_code_block
                 continue
             if inside_code_block:
                 continue
 
-            # 1) remove all %%...%%
-            line = re.sub(r"%%[^%]*%%", "", line)
-
-            # 2) if is title ### then get text inside the **...**
-            stripped = line.strip()
-            if stripped.startswith("###"):
-                m = re.search(r"\*\*(.*?)\*\*", stripped)
-                if m:
-                    title = m.group(1).strip()
-                else:
-                    title = stripped.lstrip("#").strip()
-
-                # normalize title
+            # 2) Convert separator to -
+            line = normalize_separator(line)
+            
+            # 3) remove between %%...%%
+            line = remove_between(line, "%%")
+            line = line.strip()
+            
+            # 4) normalize title
+            if line.startswith("###"):
+                title = normalize_markdown_title(line)
                 cleaned_lines.append(f"### {title}\n")
                 continue
 
-            # 3) remove ** marker
-            line = line.lstrip()
-            line = re.sub(r"\*\*(.*?)\*\*", r"\1", line)
+            # 5) remove markdown bold
+            line = remove_markdown_bold(line.lstrip())
 
-            # 4) save line if not empty
-            if line.strip():
-                cleaned_lines.append(line)
+            # 6) save line if not empty
+            if line:
+                cleaned_lines.append(line + "\n")
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(cleaned_lines)
@@ -54,21 +54,19 @@ def clean_markdown(input_path, output_path):
 
 
 
-def ReadFromMarkdownFile(inputfile, output):
+def ReadFromMarkdownFile(input_file, output_dir):
+    print("start ReadFromMarkdownFile")
 
-
-    cleaned_md=f"{output}/cleaned.md"
+    markdown_path=f"{output_dir}/cleaned.md"
     phrases = []
     current_section = []
     
-    print("start ReadFromMarkdownFile")
-
     # sanity
-    validate_file(inputfile, ".md")
+    validate_file(input_file, ".md")
 
-    clean_markdown(inputfile, cleaned_md)
- 
-    with open(cleaned_md, "r", encoding="utf-8") as f:
+    clean_markdown(input_file, markdown_path)
+    
+    with open(markdown_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

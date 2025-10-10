@@ -11,86 +11,9 @@ def Generate_Txt_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
     print("start Generate_Txt_Audio_mp3")
 
     out_file = f"{out_dir}/simple.mp3"
-    Generate_mp3_from_Phrases(phrases, out_file, learn_lang, native_lang)
     
+    generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang)
     
-def Generate_mp3_from_Phrases(phrases, out_file, learn_lang, native_lang):
-    print(f"start Generate_mp3_from_Phrases {learn_lang}->{native_lang}")
-
-    wav_path = get_resource_path("assets/end_sound.wav")
-    end_sound = AudioSegment.from_file(wav_path)
-    end_sound = end_sound.apply_gain(-10)
-
-    final_audio = AudioSegment.silent(duration=1000)
-    ensure_dir("/tmp/temp_lang_audio_gen")
-    
-
-    for i, (hu, sr) in enumerate(phrases):
-        print(f"Generating: {hu} - {sr}")
-        # TODO: GENERISI RANDOM DIREKTORIJUM I TAJ DIREKTORIJUM KORISTI
-        # Bitno je da nije fixan dir, jer u suprotnom ako se pokrene 2x istovremeno, zbunice se. 
-        hu_path = f"/tmp/temp_lang_audio_gen/hu_{i}.mp3"
-        sr_path = f"/tmp/temp_lang_audio_gen/sr_{i}.mp3"
-
-        gTTS(text=hu, lang=learn_lang).save(hu_path)
-        gTTS(text=sr, lang=native_lang).save(sr_path)
-
-        hu_audio = AudioSegment.from_file(hu_path)
-        sr_audio = AudioSegment.from_file(sr_path)
-
-        # HU -> SR -> HU -> End Sound
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
-        final_audio += sr_audio + AudioSegment.silent(duration=800)
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
-        final_audio += end_sound + AudioSegment.silent(duration=1200)
-
-# final_audio.export(out_dir + "/" + out_file, format="mp3")
-    final_audio.export(out_file, format="mp3")
-
-    remove_dir_if_exists("/tmp/temp_lang_audio_gen")
-
-    print(f"\nFinish! File saved: {out_file}")
-
-
-
-
-def Generate_mp3_from_Phrases(phrases, out_file, learn_lang, native_lang):
-    print(f"start Generate_mp3_from_Phrases {learn_lang}->{native_lang}")
-
-    wav_path = get_resource_path("assets/end_sound.wav")
-    end_sound = AudioSegment.from_file(wav_path)
-    end_sound = end_sound.apply_gain(-10)
-
-    final_audio = AudioSegment.silent(duration=1000)
-    ensure_dir("/tmp/temp_lang_audio_gen")
-
-    for i, (hu, sr) in enumerate(phrases):
-        print(f"Generating: {hu} - {sr}")
-        # TODO: GENERISI RANDOM DIREKTORIJUM I TAJ DIREKTORIJUM KORISTI
-        # Bitno je da nije fixan dir, jer u suprotnom ako se pokrene 2x istovremeno, zbunice se. 
-        hu_path = f"/tmp/temp_lang_audio_gen/hu_{i}.mp3"
-        sr_path = f"/tmp/temp_lang_audio_gen/sr_{i}.mp3"
-
-        gTTS(text=hu, lang=learn_lang).save(hu_path)
-        gTTS(text=sr, lang=native_lang).save(sr_path)
-
-        hu_audio = AudioSegment.from_file(hu_path)
-        sr_audio = AudioSegment.from_file(sr_path)
-
-        # HU -> SR -> HU -> End Sound
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
-        final_audio += sr_audio + AudioSegment.silent(duration=800)
-        final_audio += hu_audio + AudioSegment.silent(duration=800)
-        final_audio += end_sound + AudioSegment.silent(duration=1200)
-
-# final_audio.export(out_dir + "/" + out_file, format="mp3")
-    final_audio.export(out_file, format="mp3")
-
-    remove_dir_if_exists("/tmp/temp_lang_audio_gen")
-    
-    print(f"\nFinish! File saved: {out_file}")
-
-
 
 def Generate_Markdown_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
     print("start Generate_Markdown_Audio_mp3")
@@ -125,4 +48,42 @@ def Generate_Markdown_Audio_mp3(phrases, out_dir, learn_lang, native_lang):
 
         out_file = f"{out_dir}/{i:02d}_{section_title}.mp3"
 
-        Generate_mp3_from_Phrases(pairs, out_file, learn_lang, native_lang)
+        generate_mp3_from_phrases(pairs, out_file, learn_lang, native_lang)
+
+
+def generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang):
+    print(f"start generate_mp3_from_phrases {learn_lang}->{native_lang}")
+
+    wav_path = get_resource_path("assets/end_sound.wav")
+    end_sound = AudioSegment.from_file(wav_path)
+    end_sound = end_sound.apply_gain(-10)
+
+    final_audio = AudioSegment.silent(duration=1000)
+    ensure_dir("/tmp/temp_lang_audio_gen")
+    
+
+    for i, (hu, sr) in enumerate(phrases):
+        print(f"Generating: {hu} - {sr}")
+        # TODO: GENERISI RANDOM DIREKTORIJUM I TAJ DIREKTORIJUM KORISTI
+        # Bitno je da nije fixan dir, jer u suprotnom ako se pokrene 2x istovremeno, zbunice se. 
+        hu_path = f"/tmp/temp_lang_audio_gen/hu_{i}.mp3"
+        sr_path = f"/tmp/temp_lang_audio_gen/sr_{i}.mp3"
+
+        gTTS(text=hu, lang=learn_lang).save(hu_path)
+        gTTS(text=sr, lang=native_lang).save(sr_path)
+
+        hu_audio = AudioSegment.from_file(hu_path)
+        sr_audio = AudioSegment.from_file(sr_path)
+
+        # HU -> SR -> HU -> End Sound
+        final_audio += hu_audio + AudioSegment.silent(duration=800)
+        final_audio += sr_audio + AudioSegment.silent(duration=800)
+        final_audio += hu_audio + AudioSegment.silent(duration=800)
+        final_audio += end_sound + AudioSegment.silent(duration=1200)
+
+    final_audio.export(out_file, format="mp3")
+
+    remove_dir_if_exists("/tmp/temp_lang_audio_gen")
+
+    print(f"\nFinish! File saved: {out_file}")
+

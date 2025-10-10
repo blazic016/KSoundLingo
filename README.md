@@ -52,7 +52,7 @@ Example:
 ```bash
 py -m kslingo    --txt ./test/input.txt    --learn hu    --native sr
 
-&& ffplay simple.mp3
+&& ffplay output/simple.mp3
 ```
 
 **MARKDOWN MODE**
