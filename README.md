@@ -51,7 +51,7 @@ With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
 
 Example:
 ```bash
-python3 -m kslingo audio --txt ./test/input.txt --learn hu --native sr
+python3 -m kslingo audio --txt ./templates/template.txt --learn hu --native sr
 && ffplay output/simple.mp3
 ```
 
@@ -59,21 +59,21 @@ python3 -m kslingo audio --txt ./test/input.txt --learn hu --native sr
 
 Example:
 ```bash
-python3 -m kslingo audio --markdown ./test/madjarski.md --learn hu --native sr
+python3 -m kslingo audio --markdown ./templates/template_hu.md --learn hu --native sr
 ```
 
 **CONVERT JSON to MARKDOWN**
 
 Example:
 ```bash
-python3 -m kslingo convert json2md ./test/test.json --learn hu --native sr
+python3 -m kslingo convert json2md ./templates/template.json --learn hu --native sr
 ```
 
 **CONVERT MARKDOWN to JSON**
 
 Example:
 ```bash
-python3 -m kslingo convert md2json ./test/madjarski-desc.md --learn hu --native sr
+python3 -m kslingo convert md2json ./templates/template_hu.md --learn hu --native sr
 ```
 
 # How to build source code?
