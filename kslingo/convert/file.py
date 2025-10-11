@@ -8,8 +8,10 @@ from kslingo.utils.text import normalize_markdown_title
 from kslingo.utils.text import normalize_separator
 from kslingo.utils.text import extract_markdown_metadata
 from kslingo.utils.text import remove_between
-
-
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.formatting.rule import FormulaRule
+from openpyxl.styles import Border, Side
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
     Converts a structured JSON file to Markdown format with flags for level, type, and enabled state.
@@ -270,3 +272,126 @@ def Convert_json2csv(json_input_path: str, csv_output_path: str) -> None:
 
             # Blank row to separate categories
             writer.writerow([])
+            
+
+def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
+    print("start Convert_json2xlsx")
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    wb = Workbook()
+    ws = wb.active
+
+    category_font = Font(size=13, bold=True)
+    phrase_font = Font(size=12, bold=False)
+
+    # blue fill on category
+    category_fill = PatternFill(
+        fill_type="solid",
+        fgColor="D9EAF7"
+    )
+    
+    # Red fill for enabled = false (0)
+    red_fill = PatternFill(
+        fill_type="solid",
+        fgColor="FFC7CE"  # svetlo crvena
+    )
+
+    # Green fill for enabled = true (1)
+    green_fill = PatternFill(
+        fill_type="solid",
+        fgColor="C6EFCE"  # svetlo zelena
+    )
+
+    # Grey border between cells
+    gray_border = Border(
+        left=Side(style="thin", color="B0B0B0"),
+        right=Side(style="thin", color="B0B0B0"),
+        top=Side(style="thin", color="B0B0B0"),
+        bottom=Side(style="thin", color="B0B0B0")
+    )
+
+
+    # header row 
+    header_row = ["Enabled","Level", "IsWord", "HU", "SR", "EN"]
+    ws.append(header_row)
+    ws.freeze_panes = "A2"
+
+    # Set fixed with on languages
+    ws.column_dimensions["D"].width = 30  # HU
+    ws.column_dimensions["E"].width = 30  # SR
+    ws.column_dimensions["F"].width = 30  # EN
+
+    # center every cell on header
+    for cell in ws[1]:
+        cell.alignment = Alignment(horizontal="center")
+
+    for block in data:
+        category = block["category"]
+        phrases = block["phrases"]
+
+        # CATEGORY ROW (no flags, just translations)
+        category_row = [
+            "", "", "", 
+            category.get("hu", ""),
+            category.get("sr", ""),
+            category.get("en", "")
+        ]
+        ws.append(category_row)
+
+        for cell in ws[ws.max_row]:
+            cell.font = category_font
+            cell.fill = category_fill
+            cell.border = gray_border
+
+        # PHRASE ROWS
+        for phrase in phrases:
+            row = [
+                "1" if phrase.get("enabled", False) else "0",
+                phrase.get("level", ""),
+                "1" if phrase.get("isword", False) else "0",
+                phrase["translations"].get("hu", ""),
+                phrase["translations"].get("sr", ""),
+                phrase["translations"].get("en", ""),
+            ]
+            ws.append(row)
+            
+            current_row = ws[ws.max_row]
+            is_disabled = row[0] == "0"
+
+            for i, cell in enumerate(ws[ws.max_row], start=1):
+                
+                # apply border
+                cell.border = gray_border
+                
+                # center flags (first three column)
+                cell.font = phrase_font
+                if i in (1, 2, 3):  # columns: Enabled, Level, IsWord
+                    cell.alignment = Alignment(horizontal="center")
+                    
+                # colorize if enabled flag = false
+                if is_disabled:
+                    cell.fill = red_fill
+                else:
+                    cell.fill = green_fill
+                    
+        # Empty row after each category section
+        ws.append([])
+
+
+
+    # Dodaj uslovno formatiranje koje reaguje na vrednost A u svakom redu
+    max_row = ws.max_row
+    ws.conditional_formatting.add(
+        f"A2:F{max_row}",
+        FormulaRule(formula=['AND(ISNUMBER($A2), $A2=1)'], fill=green_fill)
+    )
+
+    ws.conditional_formatting.add(
+        f"A2:F{max_row}",
+        FormulaRule(formula=['AND(ISNUMBER($A2), $A2=0)'], fill=red_fill)
+    )
+
+    wb.save(xlsx_path)
+    

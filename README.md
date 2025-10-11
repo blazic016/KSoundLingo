@@ -83,12 +83,20 @@ Example:
 python3 -m kslingo convert prefix Madjarski-ksound.md 
 ```
 
-**CONVERT MARKDOWN to JSON**
+**CONVERT JSON to CSV**
 
 Example:
 ```bash
 python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 ```
+
+**CONVERT JSON to XLSX**
+
+Example:
+```bash
+python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
+```
+
 
 # How to build source code?
 
