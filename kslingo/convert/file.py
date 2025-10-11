@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from kslingo.utils.fs import ensure_dir
 import re
+import csv
 from kslingo.utils.fs import validate_file
 from kslingo.utils.text import normalize_markdown_title
 from kslingo.utils.text import normalize_separator
@@ -217,3 +218,55 @@ def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, 
         json.dump(sections, f, ensure_ascii=False, indent=4)
 
     print(f"Created JSON file : {json_output_path}")
+    
+
+def Convert_json2csv(json_input_path: str, csv_output_path: str) -> None:
+    """
+    Loads a JSON file and converts it to a CSV file in a flat format.
+
+    Each phrase becomes a row. Categories are visually separated with an empty row.
+
+    Args:
+        json_input_path (str): Path to the input JSON file.
+        csv_output_path (str): Path to save the generated CSV file.
+    """
+    
+    print("start Convert_json2csv")
+    
+    json_input_path = Path(json_input_path)
+    csv_output_path = Path(csv_output_path)
+
+    if not json_input_path.exists():
+        raise FileNotFoundError(f"JSON file does not exist: {json_input_path}")
+
+    with open(json_input_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+
+        for category_block in data:
+            category = category_block.get("category", {})
+            phrases = category_block.get("phrases", [])
+
+            # Write category as a row with translations, no metadata
+            writer.writerow([
+                "", "", "",  # empty: level, isword, enabled
+                category.get("hu", ""),
+                category.get("sr", ""),
+                category.get("en", "")
+            ])
+
+            # Write all phrases for the category
+            for phrase in phrases:
+                writer.writerow([
+                    phrase.get("level", ""),
+                    "Yes" if phrase.get("isword", False) else "No",
+                    "Yes" if phrase.get("enabled", False) else "No",
+                    phrase["translations"].get("hu", ""),
+                    phrase["translations"].get("sr", ""),
+                    phrase["translations"].get("en", ""),
+                ])
+
+            # Blank row to separate categories
+            writer.writerow([])
