@@ -1,6 +1,12 @@
 import json
 from pathlib import Path
 from kslingo.utils.fs import ensure_dir
+import re
+from kslingo.utils.fs import validate_file
+from kslingo.utils.text import normalize_markdown_title
+from kslingo.utils.text import normalize_separator
+from kslingo.utils.text import extract_markdown_metadata
+from kslingo.utils.text import remove_between
 
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
@@ -31,7 +37,7 @@ def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native
         category = section.get("category", {})
         cat_learn = category.get(learn_lang, "Unknown")
         cat_native = category.get(native_lang, "Unknown")
-        lines.append(f"### **{cat_learn} - {cat_native}**")
+        lines.append(f"### {cat_learn} - {cat_native}")
 
         for phrase in section.get("phrases", []):
             level = phrase.get("level", "A1")
@@ -100,6 +106,114 @@ def add_prefix_on_markdown(md_input_path: str, md_output_path: str, prefix: str 
     print(f"Created prefixed markdown file : {output_path}")
     
 
-def Convert_md2json(input, output_path, learn, native):
+def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, native_lang: str, default_en_lang: str = "en") -> None:
+    """
+    Converts a Markdown file with metadata prefixes into a structured JSON format for multilingual phrases.
+
+    Args:
+        md_input_path (str): Path to the Markdown input file.
+        json_output_path (str): Path to save the generated JSON file.
+        learn_lang (str): Language code used for learning (e.g., 'hu').
+        native_lang (str): Native language code (e.g., 'sr').
+        default_en_lang (str): Default fallback language code (used for 'en').
+    """
+    
     print("start Convert_json_to_markdown")
-    print(f"input={input} output_path={output_path} learn={learn} native={native}")
+
+    # sanity
+    validate_file(md_input_path, ".md")
+
+
+    md_input_path = Path(md_input_path)
+    json_output_path = Path(json_output_path)
+
+
+    inside_code_block = False
+    clean_lines = []
+
+    # TODO: MOZE SE NAPRAVITI UTILS ZA OVO (da ignorise block ```)
+    with open(md_input_path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+
+            # 1) Toggle code block on/off when encountering ```
+            if line.startswith("```"):
+                inside_code_block = not inside_code_block
+                continue
+
+            # 2) If inside code block, skip line
+            if inside_code_block:
+                continue
+
+            # 3) Add valid lines
+            if line:
+                clean_lines.append(line)
+    # -----------------------------------------
+
+    sections = []
+    current_category = None
+    current_phrases = []
+
+    for line in clean_lines:
+        if line.startswith("###"):
+            if current_category and current_phrases:
+                sections.append({
+                    "category": current_category,
+                    "phrases": current_phrases
+                })
+                current_phrases = []
+
+            # normalize title, remove ### and bold
+            title_text = normalize_markdown_title(line)
+
+            # split title to learn_lang and native_lang
+            normalized_title = normalize_separator(title_text)
+            parts = normalized_title.split(" - ", maxsplit=1)
+            if len(parts) == 2:
+                current_category = {
+                    learn_lang: parts[0].strip(),
+                    native_lang: parts[1].strip(),
+                    default_en_lang: ""  # empty for now
+                }
+            else:
+                current_category = {
+                    learn_lang: title_text.strip(),
+                    native_lang: title_text.strip(),
+                    default_en_lang: "" # empty for now
+                }
+        else:
+            # Extract metadata between %%...%%
+            meta = extract_markdown_metadata(line)
+            if meta:
+                level, isword, enabled = meta
+                phrase_line = remove_between(line, "%%").strip()
+                phrase_line = normalize_separator(phrase_line)
+
+                # Split translation pair
+                parts = phrase_line.split(" - ", maxsplit=1)
+                if len(parts) == 2:
+                    left, right = parts[0].strip(), parts[1].strip()
+                    translations = {
+                        learn_lang: left,
+                        native_lang: right,
+                        default_en_lang: "" # empty for now
+                    }
+                    current_phrases.append({
+                        "level": level,
+                        "enabled": enabled,
+                        "isword": isword,
+                        "translations": translations
+                    })
+
+    if current_category and current_phrases:
+        sections.append({
+            "category": current_category,
+            "phrases": current_phrases
+        })
+
+    ensure_dir(str(json_output_path.parent))
+    
+    with open(json_output_path, "w", encoding="utf-8") as f:
+        json.dump(sections, f, ensure_ascii=False, indent=4)
+
+    print(f"Created JSON file : {json_output_path}")

@@ -16,16 +16,18 @@ def clean_markdown(input_path, output_path):
     # sanity
     validate_file(input_path, ".md")
     
+    # TODO: MOZE SE NAPRAVITI UTILS ZA OVO, takodje i za 'convert/file.py'
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
 
-            # 1) ignore between ```...``
+            # 1) ignore between ```...```
             if line.startswith("```"):
                 inside_code_block = not inside_code_block
                 continue
             if inside_code_block:
                 continue
+    # -----------------------------------------
 
             # 2) Convert separator to -
             line = normalize_separator(line)

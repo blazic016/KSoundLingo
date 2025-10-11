@@ -111,3 +111,27 @@ def remove_markdown_bold(text: str) -> str:
         str: Cleaned string without ** markers.
     """
     return re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+
+
+def extract_markdown_metadata(line: str) -> tuple[str, bool, bool] | None:
+    """
+    Extracts metadata from a markdown line with %%LEVEL,TYPE,STATUS%% format.
+
+    Args:
+        line (str): Line that may begin with a metadata prefix.
+
+    Returns:
+        tuple: (level: str, isword: bool, enabled: bool), or None if no metadata found.
+    """
+    meta_match = re.match(r"%%(.*?)%%", line)
+    if not meta_match:
+        return None
+
+    try:
+        level, wp, ed = [x.strip() for x in meta_match.group(1).split(",")]
+        isword = wp == "W"
+        enabled = ed == "E"
+        return level, isword, enabled
+    except ValueError:
+        # Handle malformed metadata
+        return None

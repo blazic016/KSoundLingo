@@ -38,6 +38,7 @@ def get_resource_path(rel_path: str) -> str:
     return os.path.join(base, rel_path)
 
 
+# TODO: sredi da se svuda koristi Path objekat, a ne string kao trenutno.
 def ensure_dir(path: str):
     """
     Creates the directory if it does not exist.
