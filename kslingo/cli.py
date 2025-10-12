@@ -3,7 +3,7 @@ import os
 from kslingo.version import __version__
 from kslingo.audio.tts import Generate_Txt_Audio_mp3, Generate_Markdown_Audio_mp3
 from kslingo.utils.fs import ensure_dir
-from kslingo.convert.file import add_prefix_on_markdown, Convert_json2md, Convert_md2json, Convert_json2csv, Convert_json2xlsx
+from kslingo.convert.file import add_prefix_on_markdown, Convert_json2md, Convert_md2json, Convert_json2csv, Convert_json2xlsx, Convert_xlsx2json
 
 def main():
     parser = argparse.ArgumentParser(prog="kslingo", description="Multilingual audio generator and converter")
@@ -46,6 +46,11 @@ def main():
     json2xlsx_parser = convert_subparsers.add_parser("json2xlsx", help="Convert JSON to XLSX")
     json2xlsx_parser.add_argument("input", help="Input json file")
     json2xlsx_parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
+
+    # --- XLSX to JSON ---
+    xlsx2json_parser = convert_subparsers.add_parser("xlsx2json", help="Convert XLSX to JSON")
+    xlsx2json_parser.add_argument("input", help="Input xlsx file")
+    xlsx2json_parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
     
     # --- PREFIX COMMAND---
     prefix_parser = convert_subparsers.add_parser("prefix", help="Add metadata prefix to Markdown phrases.")
@@ -85,6 +90,9 @@ def main():
         elif args.convert_command == "json2xlsx":
             output_file = f"{args.output}/converted_from_json.xlsx"
             Convert_json2xlsx(args.input, output_file)
+        elif args.convert_command == "xlsx2json":
+            output_file = f"{args.output}/converted_from_xlsx.json"
+            Convert_xlsx2json(args.input, output_file)
             
             
         elif args.convert_command == "prefix":

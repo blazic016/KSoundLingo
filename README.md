@@ -73,7 +73,7 @@ python3 -m kslingo convert json2md ./templates/template.json --learn hu --native
 
 Example:
 ```bash
-python3 -m kslingo convert md2json ./templates/template_hu.md --learn hu --native sr
+python3 -m kslingo convert md2json ./Madjarski-ksound.md --learn hu --native sr
 ```
 
 **ADD PREFIX ON MARKDOWN**
@@ -96,6 +96,14 @@ Example:
 ```bash
 python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
 ```
+
+**CONVERT XLSX to JSON**
+
+Example:
+```bash
+python3 -m kslingo convert xlsx2json ./test.xlsx
+```
+
 
 
 # How to build source code?
@@ -135,3 +143,6 @@ generisi_madjarski_mp3
 That is the reason why not presneted in category *(.josn file)* field like: `level, enabled, isword`. Every category have translation for every defined language.
 
 
+# WHAT TO DO NEXT?
+1) poravnati output .json fajl pri konverziji md2json i xlsx2json
+2) 

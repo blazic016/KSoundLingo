@@ -12,6 +12,9 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.styles import Border, Side
+from openpyxl import load_workbook
+from collections import OrderedDict
+
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
     Converts a structured JSON file to Markdown format with flags for level, type, and enabled state.
@@ -395,3 +398,57 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
 
     wb.save(xlsx_path)
     
+    
+def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
+    print("start Convert_xlsx2json")
+
+    wb = load_workbook(xlsx_path)
+    ws = wb.active
+
+    rows = list(ws.iter_rows(min_row=2, values_only=True))  # skip header
+    data = []
+    current_block = None
+
+    for row in rows:
+        enabled, level, isword, hu, sr, en = row
+
+        # Empty row — skip
+        if all(cell is None or str(cell).strip() == "" for cell in row):
+            continue
+
+        # Row with no flags but has translations = CATEGORY
+        if enabled in (None, "", 0) and level in (None, "", 0) and isword in (None, "", 0):
+            # New category block
+            current_block = {
+                "category": {
+                    "hu": hu or "",
+                    "sr": sr or "",
+                    "en": en or ""
+                },
+                "phrases": []
+            }
+            data.append(current_block)
+            continue
+
+        # Otherwise it's a phrase row
+        phrase = OrderedDict([
+            ("level", str(level).strip()),
+            ("enabled", str(enabled).strip() == "1"),
+            ("isword", str(isword).strip() == "1"),
+            ("translations", {
+                "hu": hu or "",
+                "sr": sr or "",
+                "en": en or ""
+            })
+        ])
+
+        if current_block is not None:
+            current_block["phrases"].append(phrase)
+        else:
+            print("Warning: Phrase row found before any category, skipping")
+
+    # Save to JSON file
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    print(f"JSON saved to {json_path}")
