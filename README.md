@@ -41,6 +41,7 @@ ksoundlingo/
 **CHECK VERSION**
 
 Example:
+
 ```bash
 python3 -m kslingo --version
 ```
@@ -50,6 +51,7 @@ python3 -m kslingo --version
 With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
 
 Example:
+
 ```bash
 python3 -m kslingo audio --txt ./templates/template.txt --learn hu --native sr
 && ffplay output/simple.mp3
@@ -58,6 +60,7 @@ python3 -m kslingo audio --txt ./templates/template.txt --learn hu --native sr
 **AUDIO MARKDOWN MODE**
 
 Example:
+
 ```bash
 python3 -m kslingo audio --markdown ./templates/template_hu.md --learn hu --native sr
 ```
@@ -65,6 +68,7 @@ python3 -m kslingo audio --markdown ./templates/template_hu.md --learn hu --nati
 **CONVERT JSON to MARKDOWN**
 
 Example:
+
 ```bash
 python3 -m kslingo convert json2md ./templates/template.json --learn hu --native sr
 ```
@@ -72,6 +76,7 @@ python3 -m kslingo convert json2md ./templates/template.json --learn hu --native
 **CONVERT MARKDOWN to JSON**
 
 Example:
+
 ```bash
 python3 -m kslingo convert md2json ./Madjarski-ksound.md --learn hu --native sr
 ```
@@ -79,6 +84,7 @@ python3 -m kslingo convert md2json ./Madjarski-ksound.md --learn hu --native sr
 **ADD PREFIX ON MARKDOWN**
 Default prefix is: `%%A2,W,D%%`
 Example:
+
 ```bash
 python3 -m kslingo convert prefix Madjarski-ksound.md 
 ```
@@ -86,6 +92,7 @@ python3 -m kslingo convert prefix Madjarski-ksound.md
 **CONVERT JSON to CSV**
 
 Example:
+
 ```bash
 python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 ```
@@ -93,6 +100,7 @@ python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 **CONVERT JSON to XLSX**
 
 Example:
+
 ```bash
 python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
 ```
@@ -100,6 +108,7 @@ python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
 **CONVERT XLSX to JSON**
 
 Example:
+
 ```bash
 python3 -m kslingo convert xlsx2json ./test.xlsx
 ```
@@ -139,10 +148,15 @@ generisi_madjarski_mp3
 
 
 # ABOUT JSON
-- The **category** always be presented in markdown, and always be generated sound translation.
-That is the reason why not presneted in category *(.josn file)* field like: `level, enabled, isword`. Every category have translation for every defined language.
+
+* The **category** always be presented in markdown, and always be generated sound translation.
+  That is the reason why not presneted in category *(.josn file)* field like: `level, enabled, isword`. Every category have translation for every defined language.
 
 
 # WHAT TO DO NEXT?
-1) poravnati output .json fajl pri konverziji md2json i xlsx2json
-2) 
+
+
+1. poravnati output .json fajl pri konverziji md2json i xlsx2json
+2. \
+
+
