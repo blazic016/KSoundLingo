@@ -52,6 +52,7 @@ def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
             if not line:
                 continue
             hu, sr = split_pair(line)
+
             # skip if anything is wrong (ie: empty)
             if not hu and not sr:
                 print(f"SKIP (empty after split): {line}")
@@ -84,20 +85,27 @@ def generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang):
     for i, (left, right) in enumerate(phrases):
         print(f"Generating: {left} - {right}")
         
-        left_path = f"{temp_dir}/hu_{i}.mp3"
-        right_path = f"{temp_dir}/sr_{i}.mp3"
-
+        # left generate always (learn lang)
+        left_path = f"{temp_dir}/{learn_lang}_{i}.mp3"
         gTTS(text=left, lang=learn_lang).save(left_path)
-        gTTS(text=right, lang=native_lang).save(right_path)
-
         left_audio = AudioSegment.from_file(left_path)
-        right_audio = AudioSegment.from_file(right_path)
 
-        # HU -> SR -> HU -> End Sound
-        final_audio += left_audio + AudioSegment.silent(duration=800)
-        final_audio += right_audio + AudioSegment.silent(duration=800)
-        final_audio += left_audio + AudioSegment.silent(duration=800)
-        final_audio += end_sound + AudioSegment.silent(duration=1200)
+        if right != "":
+            # Means that exist phrases on both langs (learn lang - native lang)
+            # Then generate left and right.
+            right_path = f"{temp_dir}/{native_lang}_{i}.mp3"
+            gTTS(text=right, lang=native_lang).save(right_path)
+            right_audio = AudioSegment.from_file(right_path)
+
+            # LEARN-LANG -> NATIVE-LANG -> LEARN-LANG -> End Sound
+            final_audio += left_audio + AudioSegment.silent(duration=800)
+            final_audio += right_audio + AudioSegment.silent(duration=800)
+            final_audio += left_audio + AudioSegment.silent(duration=800)
+            final_audio += end_sound + AudioSegment.silent(duration=1200)
+
+        else:
+            # LEARN-LANG -> End Sound
+            final_audio += left_audio + AudioSegment.silent(duration=800)
 
     final_audio.export(out_file, format="mp3")
 

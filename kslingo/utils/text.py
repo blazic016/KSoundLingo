@@ -37,8 +37,8 @@ def split_pair(text: str) -> tuple[str, str]:
         text (str): A string containing two phrases separated by " - " or " – ".
 
     Returns:
-        tuple[str, str]: A tuple containing the left and right phrase.
-                         If no valid separator is found, returns (text, text).
+        tuple[str, str]: (left, right) if separator found,
+                         otherwise ("", text).
     """
     
     text = normalize_separator(text)
@@ -48,8 +48,8 @@ def split_pair(text: str) -> tuple[str, str]:
     
     if len(parts) == 2:
         return parts[0].strip(), parts[1].strip()
-    # fallback: return same text for both sides if no separator found
-    return text.strip(), text.strip()
+    # fallback: no separator found ; left full, right empty
+    return text.strip(), ""
 
 def remove_between(text: str, wrapper: str) -> str:
     """
