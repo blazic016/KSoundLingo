@@ -125,6 +125,18 @@ def remove_markdown_italic(text: str) -> str:
     """
     return re.sub(r"\*(.*?)\*", r"\1", text)
 
+def remove_leading_dash(text: str) -> str:
+    """
+    Removes a leading dash '-' or '- ' from the beginning of a string.
+
+    Args:
+        text (str): Input string that may start with '-' or '- '.
+
+    Returns:
+        str: String without the leading dash.
+    """
+    return re.sub(r"^-\s?", "", text)
+
 
 def extract_markdown_metadata(line: str) -> tuple[str, bool, bool] | None:
     """

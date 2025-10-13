@@ -157,6 +157,5 @@ generisi_madjarski_mp3
 
 
 1. poravnati output .json fajl pri konverziji md2json i xlsx2json
-2. \
 
 
