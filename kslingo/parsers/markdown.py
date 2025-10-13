@@ -3,7 +3,7 @@ import re
 from kslingo.utils.fs import validate_file
 from kslingo.utils.text import remove_between
 from kslingo.utils.text import normalize_markdown_title
-from kslingo.utils.text import remove_markdown_bold
+from kslingo.utils.text import remove_markdown_bold, remove_markdown_italic
 from kslingo.utils.text import normalize_separator
 
 def clean_markdown(input_path, output_path):
@@ -45,7 +45,10 @@ def clean_markdown(input_path, output_path):
             # 5) remove markdown bold
             line = remove_markdown_bold(line.lstrip())
 
-            # 6) save line if not empty
+            # 6) remove markdown italic
+            line = remove_markdown_italic(line.lstrip())   
+
+            # 7) save line if not empty
             if line:
                 cleaned_lines.append(line + "\n")
 

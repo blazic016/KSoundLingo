@@ -113,6 +113,19 @@ def remove_markdown_bold(text: str) -> str:
     return re.sub(r"\*\*(.*?)\*\*", r"\1", text)
 
 
+def remove_markdown_italic(text: str) -> str:
+    """
+    Removes Markdown italic markers (*...*) from a string.
+
+    Args:
+        text (str): Input string with possible *italic* parts.
+
+    Returns:
+        str: Cleaned string without * markers.
+    """
+    return re.sub(r"\*(.*?)\*", r"\1", text)
+
+
 def extract_markdown_metadata(line: str) -> tuple[str, bool, bool] | None:
     """
     Extracts metadata from a markdown line with %%LEVEL,TYPE,STATUS%% format.
