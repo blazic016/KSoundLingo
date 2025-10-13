@@ -78,7 +78,7 @@ python3 -m kslingo convert json2md ./templates/template.json --learn hu --native
 Example:
 
 ```bash
-python3 -m kslingo convert md2json ./Madjarski-ksound.md --learn hu --native sr
+python3 -m kslingo convert md2json ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md --learn hu --native sr
 ```
 
 **ADD PREFIX ON MARKDOWN**
@@ -110,7 +110,7 @@ python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
 Example:
 
 ```bash
-python3 -m kslingo convert xlsx2json ./test.xlsx
+python3 -m kslingo convert xlsx2json ./output/converted_from_json.xlsx
 ```
 
 
@@ -154,8 +154,5 @@ generisi_madjarski_mp3
 
 
 # WHAT TO DO NEXT?
-
-
-1. poravnati output .json fajl pri konverziji md2json i xlsx2json
-
+1. 
 

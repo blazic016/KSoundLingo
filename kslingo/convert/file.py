@@ -14,6 +14,7 @@ from openpyxl.formatting.rule import FormulaRule
 from openpyxl.styles import Border, Side
 from openpyxl import load_workbook
 from collections import OrderedDict
+from kslingo.parsers.json import write_json
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
@@ -219,8 +220,7 @@ def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, 
 
     ensure_dir(str(json_output_path.parent))
     
-    with open(json_output_path, "w", encoding="utf-8") as f:
-        json.dump(sections, f, ensure_ascii=False, indent=4)
+    write_json(sections, json_output_path)
 
     print(f"Created JSON file : {json_output_path}")
     
@@ -448,7 +448,6 @@ def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
             print("Warning: Phrase row found before any category, skipping")
 
     # Save to JSON file
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    write_json(data, json_path)
 
     print(f"JSON saved to {json_path}")
