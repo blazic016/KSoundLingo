@@ -3,30 +3,28 @@ import re
 
 def normalize_separator(text: str) -> str:
     """
-    Normalizes various separators (hyphen, en-dash, em-dash, equals) 
-    into a unified minus " - " separator for consistent phrase splitting.
+    Normalizes phrase separators (en dash, em dash, minus, equals)
+    into a unified ' - ' separator, without breaking compound words
+    like 'team-mate'.
 
-    Args:
-        text (str): Input string with bilingual content.
-
-    Returns:
-        str: String with normalized separator as " - "
+    Skips replacing hyphens surrounded by word characters.
     """
     text = text.strip()
 
-    # convert all known separators to "="
-    text = text.replace("–", "-")
-    text = text.replace("-", "-")
-    text = text.replace("=", "-")
-    text = text.replace("—", "-")
+    # Step 1: Replace separator-like characters with placeholder
+    text = re.sub(r"[–—−=]", " <SEP> ", text)
 
-    # clean additional space around of -
-    text = re.sub(r"\s*=\s*", " - ", text)
-    
-    # only debug
-    # print(text)
+    # Step 2: Replace remaining hyphens that are not part of a word (i.e., not between letters)
+    # i.e., space-hyphen-space or similar
+    text = re.sub(r"(?<!\w)-{1}(?!\w)", " <SEP> ", text)
 
-    return text
+    # Step 3: Normalize placeholder to standard ' - '
+    text = re.sub(r"\s*<SEP>\s*", " - ", text)
+
+    # Step 4: Normalize multiple spaces
+    text = re.sub(r"\s{2,}", " ", text)
+
+    return text.strip()
 
 def split_pair(text: str) -> tuple[str, str]:
     """
@@ -136,6 +134,36 @@ def remove_leading_dash(text: str) -> str:
         str: String without the leading dash.
     """
     return re.sub(r"^-\s?", "", text)
+
+
+def ensure_dash_prefix(text: str) -> str:
+    """
+    Ensures that the string starts with exactly '- ' by normalizing any existing leading dashes.
+
+    Args:
+        text (str): Input string that may or may not start with a dash.
+
+    Returns:
+        str: String starting with '- '.
+    """
+    cleaned = re.sub(r"^[-\s]*", "", text)
+    return f"- {cleaned}"
+
+
+def bold_prefix_before_separator(line: str) -> str:
+    """
+    Bolds the part before ' - ' in a single line by wrapping it with '**'.
+
+    Args:
+        line (str): Input line containing ' - '.
+
+    Returns:
+        str: Line with bolded prefix if ' - ' is present; unchanged otherwise.
+    """
+    if " - " in line:
+        prefix, suffix = line.split(" - ", 1)
+        return f"**{prefix.strip()}** - {suffix.strip()}"
+    return line
 
 
 def extract_markdown_metadata(line: str) -> tuple[str, bool, bool] | None:

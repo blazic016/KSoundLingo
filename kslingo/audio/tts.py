@@ -5,8 +5,8 @@ from kslingo.utils.fs import ensure_dir
 from kslingo.utils.fs import create_temp_dir, remove_dir_if_exists
 from kslingo.utils.text import split_pair
 from kslingo.parsers.txt import ReadFromTxtFile
-from kslingo.parsers.markdown import ReadFromMarkdownFile
-
+from kslingo.parsers.markdown import get_phrases_markdown, generate_output_md_from_phrases
+from kslingo.convert.file import Generate_pdf_from_md
 
 def Generate_Txt_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
     print("start Generate_Txt_Audio_mp3")
@@ -30,42 +30,51 @@ def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
     # sanity
     ensure_dir(out_dir)
 
-    phrases = ReadFromMarkdownFile(input_file, out_dir)
+    phrases = get_phrases_markdown(input_file)
+
     if not phrases:
         print("ERROR: phrases is empty array!")
         return
-            
+
+
     for i, section in enumerate(phrases):
-        if not section:
+        if not section or not section.get("phrases"):
             continue
 
-        # 1) title of the section is section[0]; make hu_title, sr_title
-        section_title = section[0].strip()
+        section_title = section.get("title", f"section_{i}")
         hu_title, sr_title = split_pair(section_title)
 
-        # 2) create list of tuples and add title as first pair
+        # audio list of pairs [(hu, sr)]
         pairs = [(hu_title, sr_title)]
 
-        # 3) convert every single line to phrase (HU, SR) and append to pairs
-        for line in section[1:]:
-            line = line.strip()
-            if not line:
-                continue
-            hu, sr = split_pair(line)
+        for phrase in section["phrases"]:
+            # if phrase.get("only_learn"):
+            #     continue
 
-            # skip if anything is wrong (ie: empty)
-            if not hu and not sr:
-                print(f"SKIP (empty after split): {line}")
-                continue
+            hu = phrase.get("hu", "").strip()
+            sr = phrase.get("sr", "")
+            sr = sr.strip() if sr else ""
+
+            # if not hu or not sr:
+            #     print(f"SKIP (incomplete): hu='{hu}' | sr='{sr}'")
+            #     continue
+
             pairs.append((hu, sr))
 
-        if len(pairs) == 0:
-            print(f"SKIP section (no valid phrases): {section_title}")
+        if len(pairs) <= 1:
+            print(f"SKIP section (no valid audio pairs): {section_title}")
             continue
 
-        out_file = f"{out_dir}/{i:02d}_{section_title}.mp3"
+        safe_title = section_title.replace(" ", "_").replace("/", "_")
+        out_file = f"{out_dir}/{i:02d}_{safe_title}.mp3"
 
         generate_mp3_from_phrases(pairs, out_file, learn_lang, native_lang)
+
+    out_md=f"{out_dir}/cleaned.md"
+    generate_output_md_from_phrases(phrases, out_md)
+    
+    out_pdf=f"{out_dir}/cleaned.pdf"
+    Generate_pdf_from_md(out_md, out_pdf)
 
 
 def generate_mp3_from_phrases(phrases, out_file, learn_lang, native_lang):

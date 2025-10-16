@@ -52,6 +52,12 @@ def main():
     xlsx2json_parser.add_argument("input", help="Input xlsx file")
     xlsx2json_parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
     
+    # --- MD to MD ---
+    md2md_parser = convert_subparsers.add_parser("md2md", help="Convert MD to MD")
+    md2md_parser.add_argument("input", help="Input md file")
+    md2md_parser.add_argument("--output", metavar="DIR", default="output", help="Output directory (default: ./output)")
+    
+
     # --- PREFIX COMMAND---
     prefix_parser = convert_subparsers.add_parser("prefix", help="Add metadata prefix to Markdown phrases.")
     prefix_parser.add_argument("input", help="Input markdown file")
@@ -61,7 +67,6 @@ def main():
     args = parser.parse_args()
     
     print(f"kslingo v{__version__}")
-
 
     if args.command == "audio":
         ensure_dir(args.output)
@@ -87,13 +92,19 @@ def main():
         elif args.convert_command == "json2csv":
             output_file = f"{args.output}/converted_from_json.csv"
             Convert_json2csv(args.input, output_file)
+
         elif args.convert_command == "json2xlsx":
             output_file = f"{args.output}/converted_from_json.xlsx"
             Convert_json2xlsx(args.input, output_file)
+
         elif args.convert_command == "xlsx2json":
             output_file = f"{args.output}/converted_from_xlsx.json"
             Convert_xlsx2json(args.input, output_file)
-            
+
+        elif args.convert_command == "md2md":
+            output_file = f"{args.output}/Reparsed.md"
+            # TODO: 
+            # It is not ipmplement yet this special case of markdown reparsing.
             
         elif args.convert_command == "prefix":
             ensure_dir(args.output)

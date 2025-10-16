@@ -9,9 +9,9 @@ It is important to have character `-` between serbian and hungarian language.
 
 # Install requirments
 
-`pip install -r requirements.txt`
-
-
+```bash
+pip install -r requirements.txt
+```
 
 # Struct of directories
 
@@ -38,86 +38,96 @@ ksoundlingo/
 
 # How to run?
 
-**CHECK VERSION**
+### CHECK VERSION
 
-Example:
-
+*Example:*
 ```bash
 python3 -m kslingo --version
 ```
 
-**AUDIO TXT MODE**
+### AUDIO TXT MODE
 
-With option --txt it is read from the txt file, and store mp3 in simple.mp3 file
-
-Example:
-
+*Example:*
 ```bash
 python3 -m kslingo audio --txt ./templates/template.txt --learn hu --native sr
 && ffplay output/simple.mp3
 ```
 
-**AUDIO MARKDOWN MODE**
+### AUDIO MARKDOWN MODE
 
-Example:
-
+*Example:*
 ```bash
-python3 -m kslingo audio --markdown ./templates/template_hu.md --learn hu --native sr
+
+python3 -m kslingo audio \
+	--markdown ~/Mega/Beleske/OBSIDIAN/Engleski-Vault/Engleski-test.md \
+	--learn en --native sr
+	
+	
+	
 ```
 
-**CONVERT JSON to MARKDOWN**
+### CONVERT JSON to MARKDOWN
 
-Example:
-
+*Example:*
 ```bash
-python3 -m kslingo convert json2md ./templates/template.json --learn hu --native sr
+python3 -m kslingo convert \
+	json2md ./templates/template.json 
+	--learn hu --native sr
 ```
 
-**CONVERT MARKDOWN to JSON**
+### CONVERT MARKDOWN to JSON
 
-Example:
-
+*Example:*
 ```bash
-python3 -m kslingo convert md2json ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md --learn hu --native sr
+python3 -m kslingo convert \
+	md2json ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md 
+	--learn hu --native sr
 ```
 
-**ADD PREFIX ON MARKDOWN**
+### ADD PREFIX ON MARKDOWN
 Default prefix is: `%%A2,W,D%%`
-Example:
 
+*Example:*
 ```bash
 python3 -m kslingo convert prefix Madjarski-ksound.md 
 ```
 
-**CONVERT JSON to CSV**
+### CONVERT JSON to CSV
 
-Example:
-
+*Example:*
 ```bash
 python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 ```
 
-**CONVERT JSON to XLSX**
+### CONVERT JSON to XLSX
 
-Example:
-
+*Example:*
 ```bash
-python3 -m kslingo convert json2xlsx ./output/converted_from_markdown.json
+python3 -m kslingo convert \
+	json2xlsx ./output/converted_from_markdown.json
 ```
 
-**CONVERT XLSX to JSON**
+### CONVERT XLSX to JSON
 
-Example:
-
+*Example:*
 ```bash
-python3 -m kslingo convert xlsx2json ./output/converted_from_json.xlsx
+
+pisi ponekad dva tri reda
+
 ```
 
+### CONVERT MD to MD
+Use for only reparsing markdown file, in order to be better than current markdown file.
+
+*Example:*
+```bash
+python3 -m kslingo convert md2md ./output/converted_from_json.xlsx
+```
 
 
 # How to build source code?
 
-LINUX
+**LINUX**
 
 ```bash
 pyinstaller --clean -F main.py -n lang-audio-gen \
@@ -126,7 +136,7 @@ pyinstaller --clean -F main.py -n lang-audio-gen \
 ```
 
 
-WINDOWS
+**WINDOWS**
 
 ```bash
 pyinstaller --onefile --name lang-audio-gen ^
@@ -154,5 +164,7 @@ generisi_madjarski_mp3
 
 
 # WHAT TO DO NEXT?
-1. 
-
+1. Only reparse md ()
+	- ako ima 1+ redova razmaka negde da zakuca na tacno 1
+	- oni koji su E da bolduje
+2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
