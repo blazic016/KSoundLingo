@@ -5,6 +5,7 @@ from kslingo.utils.text import remove_between
 from kslingo.utils.text import normalize_markdown_title
 from kslingo.utils.text import remove_markdown_bold, remove_markdown_italic, remove_leading_dash
 from kslingo.utils.text import normalize_separator
+from kslingo.convert.file import Generate_pdf_from_md
 
 def clean_markdown(input_path, output_path):
     
@@ -62,19 +63,20 @@ def clean_markdown(input_path, output_path):
 
 
 
-def ReadFromMarkdownFile(input_file, output_dir):
+def ReadFromMarkdownFile(input_md_file, output_dir):
     print("start ReadFromMarkdownFile")
 
-    markdown_path=f"{output_dir}/cleaned.md"
+    gen_md_file=f"{output_dir}/cleaned.md"
+    gen_pdf_file=f"{output_dir}/cleaned.pdf"
     phrases = []
     current_section = []
     
-    # sanity
-    validate_file(input_file, ".md")
+    # Generate output documents
+    clean_markdown(input_md_file, gen_md_file)
+    Generate_pdf_from_md(gen_md_file, gen_pdf_file)
 
-    clean_markdown(input_file, markdown_path)
-    
-    with open(markdown_path, "r", encoding="utf-8") as f:
+    # Read from reparsed markdwon
+    with open(gen_md_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

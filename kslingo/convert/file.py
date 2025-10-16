@@ -15,6 +15,9 @@ from openpyxl.styles import Border, Side
 from openpyxl import load_workbook
 from collections import OrderedDict
 from kslingo.parsers.json import write_json
+import markdown
+from weasyprint import HTML
+
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
@@ -396,7 +399,9 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
         FormulaRule(formula=['AND(ISNUMBER($A2), $A2=0)'], fill=red_fill)
     )
 
+    # Save to XLSX file
     wb.save(xlsx_path)
+    print(f"XLSX saved to {json_path}")
     
     
 def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
@@ -451,3 +456,34 @@ def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
     write_json(data, json_path)
 
     print(f"JSON saved to {json_path}")
+
+def Generate_pdf_from_md(md_path: str, pdf_path: str) -> str:
+    """
+    Converts a Markdown (.md) file to PDF and saves it to the specified directory.
+
+    Args:
+        md_path (str): Path to the Markdown file.
+        pdf_path (str): Path to the PDF file.
+
+    Returns:
+        str: Path to the generated PDF file.
+    """
+    
+    print("start Generate_pdf_from_md")
+
+    validate_file(md_path, ".md")
+
+    # load content from MD 
+    with open(md_path, 'r', encoding='utf-8') as f:
+        md_text = f.read()
+
+    # convert MD to HTML
+    html_text = markdown.markdown(md_text)
+
+    # convert HTML to PDF
+    HTML(string=html_text).write_pdf(pdf_path)
+
+    validate_file(pdf_path, ".pdf")
+
+    return
+
