@@ -4,6 +4,7 @@ from kslingo.version import __version__
 from kslingo.audio.tts import Generate_Txt_Audio_mp3, Generate_Markdown_Audio_mp3
 from kslingo.utils.fs import ensure_dir
 from kslingo.convert.file import Convert_json2md, Convert_md2json, Convert_json2xlsx, Convert_xlsx2json
+from kslingo.parsers.markdown import just_only_reparse_md
 
 def main():
     parser = argparse.ArgumentParser(prog="kslingo", description="Multilingual audio generator and converter")
@@ -110,9 +111,9 @@ def main():
     elif args.command == "parse":
         # ensure_dir(args.o) # odnosi se na dir, a sad je file. FIX IT!
         if args.parse_command == "only-reparse-markdown":
-            output_file = args.o 
             print("Just only markdown reparsing")
             # Convert_json2md(args.i, output_file, args.learn, args.native)
+            just_only_reparse_md(args.i,args.o)
 
          
         else:

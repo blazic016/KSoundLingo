@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "Only-Reparsed.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "Only-Reparsed"
             }
           }
         ]
@@ -172,6 +172,7 @@
   "active": "8742dfd13e302a10",
   "lastOpenFiles": [
     "English-kslt.md",
+    "Only-Reparsed.md",
     "README.md",
     "Reparsed.md",
     "Engleski-test.md",

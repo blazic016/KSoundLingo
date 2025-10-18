@@ -125,15 +125,15 @@ def remove_markdown_italic(text: str) -> str:
 
 def remove_leading_dash(text: str) -> str:
     """
-    Removes a leading dash '-' or '- ' from the beginning of a string.
+    Removes a leading dash '-', including variants like '- ', ' -', or ' - ' at the beginning of a string.
 
     Args:
-        text (str): Input string that may start with '-' or '- '.
+        text (str): Input string that may start with combinations of spaces and dashes.
 
     Returns:
         str: String without the leading dash.
     """
-    return re.sub(r"^-\s?", "", text)
+    return re.sub(r"^\s*-\s*", "", text)
 
 
 def ensure_dash_prefix(text: str) -> str:

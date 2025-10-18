@@ -131,6 +131,63 @@ def get_phrases_markdown(file_path: str) -> List[Dict[str, any]]:
     return phrases
 
 
+def just_only_reparse_md(input_file: str, output_file: str):
+    print("start just_only_reparse_md")
+    print(f"input_file={input_file}")
+    print(f"output_file={output_file}")
+
+    inside_code_block = False
+
+    with open(input_file, encoding="utf-8") as fin, open(output_file, "w", encoding="utf-8") as fout:
+        for line in fin:
+            raw = line.rstrip('\n')
+
+            # --- CODE BLOCKS ---
+            if raw.strip().startswith("```"):
+                inside_code_block = not inside_code_block
+                fout.write(line)
+                continue
+
+            if inside_code_block:
+                fout.write(line)
+                continue
+
+            if not raw.strip():
+                fout.write("\n")
+                continue
+
+            if raw.strip().startswith("###"):
+                fout.write(line)
+                continue
+
+            # --- EXTRACT FLAGS ---
+            flag_match = re.search(r'%%(.*?)%%', raw)
+            if flag_match:
+                flags = flag_match.group(1).strip()
+                # Remove all %%...%% occurrences
+                raw = re.sub(r'%%.*?%%', '', raw).strip()
+            else:
+                flags = "A2,W,D"
+
+            # Remove leading dash, normalize spacing
+            raw = raw.lstrip("-").strip()
+            raw = normalize_separator(raw)
+            raw = remove_markdown_bold(raw)
+            raw = remove_markdown_italic(raw)
+            raw = remove_leading_dash(raw)
+            
+            # --- PARSE PHRASE ---
+            if " - " in raw:
+                hu, sr = raw.rsplit(" - ", 1)
+                hu = hu.strip()
+                sr = sr.strip()
+                fout.write(f"- %%{flags}%% {hu} - {sr}\n")
+            else:
+                fout.write(f"- %%{flags}%% *{raw}*\n")
+
+    return
+
+
 def generate_output_md_from_phrases(phrases: List[Dict[str, any]], output_file: str) -> None:
     """
     Generates a markdown file from a parsed list of sections and phrases.
