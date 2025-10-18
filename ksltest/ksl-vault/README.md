@@ -59,10 +59,8 @@ python3 -m kslingo audio --txt ./templates/template.txt --learn hu --native sr
 ```bash
 
 python3 -m kslingo audio \
-	--markdown ~/Mega/Beleske/OBSIDIAN/Engleski-Vault/Engleski-test.md \
-	--learn en --native sr
-	
-	
+	--markdown ksltest/ksl-vault/English-kslt.md
+	-learn en -native sr
 	
 ```
 
@@ -70,18 +68,18 @@ python3 -m kslingo audio \
 
 *Example:*
 ```bash
-python3 -m kslingo convert \
-	json2md ./templates/template.json 
-	--learn hu --native sr
+python3 -m kslingo convert json2md \
+	 -i ./templates/template.json 
+	-learn hu -native sr
 ```
 
 ### CONVERT MARKDOWN to JSON
 
 *Example:*
 ```bash
-python3 -m kslingo convert \
-	md2json ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md 
-	--learn hu --native sr
+python3 -m kslingo convert md2json \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-learn en -native sr
 ```
 
 ### ADD PREFIX ON MARKDOWN
@@ -103,8 +101,8 @@ python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 
 *Example:*
 ```bash
-python3 -m kslingo convert \
-	json2xlsx ./output/converted_from_markdown.json
+python3 -m kslingo convert json2xlsx \
+	-i ./output/converted_from_markdown.json
 ```
 
 ### CONVERT XLSX to JSON
@@ -112,16 +110,20 @@ python3 -m kslingo convert \
 *Example:*
 ```bash
 
-pisi ponekad dva tri reda
+python3 -m kslingo convert xlsx2json \
+	-i ./output/converted_from_json.xlsx
 
 ```
 
-### CONVERT MD to MD
+### JUST ONLY REPARSE MARKDOWN
 Use for only reparsing markdown file, in order to be better than current markdown file.
 
 *Example:*
 ```bash
-python3 -m kslingo convert md2md ./output/converted_from_json.xlsx
+
+python3 -m kslingo parse only-reparse-markdown \
+	-i ksltest/ksl-vault/English-kslt.md
+
 ```
 
 
@@ -164,7 +166,11 @@ generisi_madjarski_mp3
 
 
 # WHAT TO DO NEXT?
-1. Only reparse md ()
+1. Implement Just Only reparse md 
 	- ako ima 1+ redova razmaka negde da zakuca na tacno 1
 	- oni koji su E da bolduje
 2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
+3. po novom **md2json** ne parsira dobro
+4. kada fixujes md2json onda fixuj **json2md**
+5. **json2xlsx**
+6. **xlsx2json**

@@ -3,12 +3,13 @@
 cd KSoundLingo
 
 #1 GENERATE output MP3 & output MD & output PDF
-python3 -m kslingo audio --markdown ksltest/ksl-vault/English-kslt.md --learn en --native sr
+python3 -m kslingo audio --markdown ksltest/ksl-vault/English-kslt.md -learn en -native sr
 
 
-#3 ONLY REPARSE MD
-TODO
-
+#2 ONLY REPARSE MD
+python3 -m kslingo parse \
+	only-reparse-markdown   
+	-i ksltest/ksl-vault/English-kslt.md 
 
 ```
 

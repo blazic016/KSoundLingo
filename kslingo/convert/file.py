@@ -76,44 +76,44 @@ def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native
 
     print(f"Created markdown file : {md_output_path}")
     
-def add_prefix_on_markdown(md_input_path: str, md_output_path: str, prefix: str = "%%A2,W,D%%") -> None:
-    """
-    Adds a given prefix to all phrase lines in a Markdown file, 
-    excluding category headers (lines starting with '###') and empty lines.
+# def add_prefix_on_markdown(md_input_path: str, md_output_path: str, prefix: str = "%%A2,W,D%%") -> None:
+#     """
+#     Adds a given prefix to all phrase lines in a Markdown file, 
+#     excluding category headers (lines starting with '###') and empty lines.
 
-    This is useful for tagging phrases with metadata (e.g., level, type, status)
-    in preparation for conversion to structured formats like JSON.
+#     This is useful for tagging phrases with metadata (e.g., level, type, status)
+#     in preparation for conversion to structured formats like JSON.
 
-    Args:
-        md_input_path (str): Path to the original Markdown (.md) file.
-        md_output_path (str): Path where the modified Markdown file will be saved.
-        prefix (str): The prefix string to prepend to each phrase line.
-    """
+#     Args:
+#         md_input_path (str): Path to the original Markdown (.md) file.
+#         md_output_path (str): Path where the modified Markdown file will be saved.
+#         prefix (str): The prefix string to prepend to each phrase line.
+#     """
     
-    # TODO: za sada bezuslovno ubacuje prefix, napravi da ubacuje samo ako ga nema.
+#     # TODO: za sada bezuslovno ubacuje prefix, napravi da ubacuje samo ako ga nema.
     
-    input_path = Path(md_input_path)
-    output_path = Path(md_output_path)
+#     input_path = Path(md_input_path)
+#     output_path = Path(md_output_path)
 
-    with open(input_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+#     with open(input_path, "r", encoding="utf-8") as f:
+#         lines = f.readlines()
 
-    updated_lines = []
-    for line in lines:
-        stripped = line.strip()
+#     updated_lines = []
+#     for line in lines:
+#         stripped = line.strip()
 
-        if not stripped:
-            updated_lines.append("")
-        elif stripped.startswith("###"):
-            updated_lines.append(line.rstrip())
-        else:
-            updated_lines.append(f"{prefix} {line.strip()}")
+#         if not stripped:
+#             updated_lines.append("")
+#         elif stripped.startswith("###"):
+#             updated_lines.append(line.rstrip())
+#         else:
+#             updated_lines.append(f"{prefix} {line.strip()}")
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(updated_lines) + "\n")
+#     output_path.parent.mkdir(parents=True, exist_ok=True)
+#     with open(output_path, "w", encoding="utf-8") as f:
+#         f.write("\n".join(updated_lines) + "\n")
         
-    print(f"Created prefixed markdown file : {output_path}")
+#     print(f"Created prefixed markdown file : {output_path}")
     
 
 def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, native_lang: str, default_en_lang: str = "en") -> None:
@@ -228,56 +228,56 @@ def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, 
     print(f"Created JSON file : {json_output_path}")
     
 
-def Convert_json2csv(json_input_path: str, csv_output_path: str) -> None:
-    """
-    Loads a JSON file and converts it to a CSV file in a flat format.
+# def Convert_json2csv(json_input_path: str, csv_output_path: str) -> None:
+#     """
+#     Loads a JSON file and converts it to a CSV file in a flat format.
 
-    Each phrase becomes a row. Categories are visually separated with an empty row.
+#     Each phrase becomes a row. Categories are visually separated with an empty row.
 
-    Args:
-        json_input_path (str): Path to the input JSON file.
-        csv_output_path (str): Path to save the generated CSV file.
-    """
+#     Args:
+#         json_input_path (str): Path to the input JSON file.
+#         csv_output_path (str): Path to save the generated CSV file.
+#     """
     
-    print("start Convert_json2csv")
+#     print("start Convert_json2csv")
     
-    json_input_path = Path(json_input_path)
-    csv_output_path = Path(csv_output_path)
+#     json_input_path = Path(json_input_path)
+#     csv_output_path = Path(csv_output_path)
 
-    if not json_input_path.exists():
-        raise FileNotFoundError(f"JSON file does not exist: {json_input_path}")
+#     if not json_input_path.exists():
+#         raise FileNotFoundError(f"JSON file does not exist: {json_input_path}")
 
-    with open(json_input_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+#     with open(json_input_path, "r", encoding="utf-8") as f:
+#         data = json.load(f)
 
-    with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile)
+#     with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
+#         writer = csv.writer(csvfile)
 
-        for category_block in data:
-            category = category_block.get("category", {})
-            phrases = category_block.get("phrases", [])
+#         for category_block in data:
+#             category = category_block.get("category", {})
+#             phrases = category_block.get("phrases", [])
 
-            # Write category as a row with translations, no metadata
-            writer.writerow([
-                "", "", "",  # empty: level, isword, enabled
-                category.get("hu", ""),
-                category.get("sr", ""),
-                category.get("en", "")
-            ])
+#             # Write category as a row with translations, no metadata
+#             writer.writerow([
+#                 "", "", "",  # empty: level, isword, enabled
+#                 category.get("hu", ""),
+#                 category.get("sr", ""),
+#                 category.get("en", "")
+#             ])
 
-            # Write all phrases for the category
-            for phrase in phrases:
-                writer.writerow([
-                    phrase.get("level", ""),
-                    "Yes" if phrase.get("isword", False) else "No",
-                    "Yes" if phrase.get("enabled", False) else "No",
-                    phrase["translations"].get("hu", ""),
-                    phrase["translations"].get("sr", ""),
-                    phrase["translations"].get("en", ""),
-                ])
+#             # Write all phrases for the category
+#             for phrase in phrases:
+#                 writer.writerow([
+#                     phrase.get("level", ""),
+#                     "Yes" if phrase.get("isword", False) else "No",
+#                     "Yes" if phrase.get("enabled", False) else "No",
+#                     phrase["translations"].get("hu", ""),
+#                     phrase["translations"].get("sr", ""),
+#                     phrase["translations"].get("en", ""),
+#                 ])
 
-            # Blank row to separate categories
-            writer.writerow([])
+#             # Blank row to separate categories
+#             writer.writerow([])
             
 
 def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
