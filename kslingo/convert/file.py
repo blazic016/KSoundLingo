@@ -15,8 +15,10 @@ from openpyxl.styles import Border, Side
 from openpyxl import load_workbook
 from collections import OrderedDict
 from kslingo.parsers.json import write_json
+from kslingo.parsers.markdown import get_phrases_markdown
 import markdown
 from weasyprint import HTML
+from kslingo.support import get_supported_languages
 
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
@@ -116,117 +118,90 @@ def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native
 #     print(f"Created prefixed markdown file : {output_path}")
     
 
-def Convert_md2json(md_input_path: str, json_output_path: str, learn_lang: str, native_lang: str, default_en_lang: str = "en") -> None:
+def Convert_md2json(
+    md_input_path: str,
+    json_output_path: str,
+    learn_lang: str,
+    native_lang: str,
+) -> None:
     """
-    Converts a Markdown file with metadata prefixes into a structured JSON format for multilingual phrases.
-
-    Args:
-        md_input_path (str): Path to the Markdown input file.
-        json_output_path (str): Path to save the generated JSON file.
-        learn_lang (str): Language code used for learning (e.g., 'hu').
-        native_lang (str): Native language code (e.g., 'sr').
-        default_en_lang (str): Default fallback language code (used for 'en').
+    Converts parsed Markdown phrases (from get_phrases_markdown) into structured JSON.
     """
-    
-    print("start Convert_json_to_markdown")
 
-    # sanity
-    validate_file(md_input_path, ".md")
+    print("start Convert_md2json")
 
+    phrases = get_phrases_markdown(md_input_path, learn_lang, native_lang)
 
-    md_input_path = Path(md_input_path)
-    json_output_path = Path(json_output_path)
+    if not phrases:
+        print("ERROR: phrases is empty array!")
+        return
 
-
-    inside_code_block = False
-    clean_lines = []
-
-    # TODO: MOZE SE NAPRAVITI UTILS ZA OVO (da ignorise block ```)
-    with open(md_input_path, "r", encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.strip()
-
-            # 1) Toggle code block on/off when encountering ```
-            if line.startswith("```"):
-                inside_code_block = not inside_code_block
-                continue
-
-            # 2) If inside code block, skip line
-            if inside_code_block:
-                continue
-
-            # 3) Add valid lines
-            if line:
-                clean_lines.append(line)
-    # -----------------------------------------
+    # Debug print
+    for i, sec in enumerate(phrases):
+        print(f"Section {i}: {sec['title']}")
+        for j, phrase in enumerate(sec["phrases"]):
+            print(f"  [{i}][{j}] {phrase}")
 
     sections = []
-    current_category = None
-    current_phrases = []
+    supported_langs = get_supported_languages()
 
-    for line in clean_lines:
-        if line.startswith("###"):
-            if current_category and current_phrases:
-                sections.append({
-                    "category": current_category,
-                    "phrases": current_phrases
-                })
-                current_phrases = []
+    for sec in phrases:
+        # --- CATEGORY (section title) ---
+        title_text = normalize_separator(sec["title"])
+        parts = title_text.split(" - ", maxsplit=1)
 
-            # normalize title, remove ### and bold
-            title_text = normalize_markdown_title(line)
-
-            # split title to learn_lang and native_lang
-            normalized_title = normalize_separator(title_text)
-            parts = normalized_title.split(" - ", maxsplit=1)
+        # Uvek napravi category sa svim jezicima
+        category = {}
+        for lang in supported_langs:
             if len(parts) == 2:
-                current_category = {
-                    learn_lang: parts[0].strip(),
-                    native_lang: parts[1].strip(),
-                    default_en_lang: ""  # empty for now
-                }
+                if lang == learn_lang:
+                    category[lang] = parts[0].strip()
+                elif lang == native_lang:
+                    category[lang] = parts[1].strip()
+                else:
+                    category[lang] = ""
             else:
-                current_category = {
-                    learn_lang: title_text.strip(),
-                    native_lang: title_text.strip(),
-                    default_en_lang: "" # empty for now
-                }
-        else:
-            # Extract metadata between %%...%%
-            meta = extract_markdown_metadata(line)
-            if meta:
-                level, isword, enabled = meta
-                phrase_line = remove_between(line, "%%").strip()
-                phrase_line = normalize_separator(phrase_line)
+                # Ako nema separatora " - "
+                if lang in (learn_lang, native_lang):
+                    category[lang] = title_text.strip()
+                else:
+                    category[lang] = ""
 
-                # Split translation pair
-                parts = phrase_line.split(" - ", maxsplit=1)
-                if len(parts) == 2:
-                    left, right = parts[0].strip(), parts[1].strip()
-                    translations = {
-                        learn_lang: left,
-                        native_lang: right,
-                        default_en_lang: "" # empty for now
-                    }
-                    current_phrases.append({
-                        "level": level,
-                        "enabled": enabled,
-                        "isword": isword,
-                        "translations": translations
-                    })
+        current_phrases = []
 
-    if current_category and current_phrases:
-        sections.append({
-            "category": current_category,
-            "phrases": current_phrases
-        })
+        for phrase in sec["phrases"]:
+            # Primer: {'flags': ['A2', 'W', 'E'], 'only_learn': False, 'hu': 'lazy', 'sr': 'lenj'}
 
-    ensure_dir(str(json_output_path.parent))
-    
+            flags = phrase.get("flags", [])
+            level = flags[0] if len(flags) > 0 else ""
+            isword = "W" in flags
+            enabled = "E" in flags
+
+            # --- TRANSLATIONS: popuni sve jezike iz supported liste ---
+            translations = {}
+            for lang in supported_langs:
+                if lang == learn_lang or lang == native_lang:
+                    translations[lang] = phrase.get(lang, "")
+                else:
+                    translations[lang] = ""
+
+            current_phrases.append({
+                "level": level,
+                "enabled": enabled,
+                "isword": isword,
+                "translations": translations
+            })
+
+        if current_phrases:
+            sections.append({
+                "category": category,
+                "phrases": current_phrases
+            })
+
+    ensure_dir(str(Path(json_output_path).parent))
     write_json(sections, json_output_path)
-
     print(f"Created JSON file : {json_output_path}")
-    
+
 
 # def Convert_json2csv(json_input_path: str, csv_output_path: str) -> None:
 #     """

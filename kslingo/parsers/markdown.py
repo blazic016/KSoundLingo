@@ -10,11 +10,11 @@ from kslingo.utils.text import  remove_markdown_bold, \
                                 bold_prefix_before_separator
 
 from kslingo.utils.text import normalize_separator
-from kslingo.convert.file import Generate_pdf_from_md
+# from kslingo.convert.file import Generate_pdf_from_md
 from typing import List, Dict
 
 
-def get_phrases_markdown(file_path: str) -> List[Dict[str, any]]:
+def get_phrases_markdown(file_path: str, learn_lang: str, native_lang: str) -> List[Dict[str, any]]:
     """
     Parses a markdown file and extracts phrase sections for language learning.
 
@@ -99,8 +99,8 @@ def get_phrases_markdown(file_path: str) -> List[Dict[str, any]]:
                     current_section["phrases"].append({
                         "flags": flags,
                         "only_learn": False,
-                        "hu": hu,
-                        "sr": sr
+                        learn_lang: hu,
+                        native_lang: sr
                     })
 
                 else:
@@ -114,8 +114,8 @@ def get_phrases_markdown(file_path: str) -> List[Dict[str, any]]:
                     current_section["phrases"].append({
                         "flags": ["A2", "W", "D"],
                         "only_learn": True,
-                        "hu": line,
-                        "sr": None
+                        learn_lang: line,
+                        native_lang: None
                     })
 
     # Add latest section
@@ -134,7 +134,6 @@ def get_phrases_markdown(file_path: str) -> List[Dict[str, any]]:
 def just_only_reparse_md(input_file: str, output_file: str):
     print("start just_only_reparse_md")
     print(f"input_file={input_file}")
-    print(f"output_file={output_file}")
 
     inside_code_block = False
 
@@ -183,10 +182,6 @@ def just_only_reparse_md(input_file: str, output_file: str):
             if len(flag_list) > 3:
                 print("Error: Too much flags!")
                 return
-            # elif flag_list[2] == "E":
-            #     print(f"[E-ONLY] third flag = {flag_list[2]}")
-            # else:
-            #     print(f"[ALL FLAGS] {flag_list}")
 
 
             # --- PARSE PHRASE ---
@@ -204,10 +199,16 @@ def just_only_reparse_md(input_file: str, output_file: str):
             else:
                 fout.write(f"- %%{flags}%% *{raw}*\n")
 
+    print(f"\nFinish! File saved: {output_file}")
     return
 
 
-def generate_output_md_from_phrases(phrases: List[Dict[str, any]], output_file: str) -> None:
+def generate_output_md_from_phrases(
+        phrases: List[Dict[str, any]],
+        output_file: str,
+        learn_lang: str,
+        native_lang: str
+    ) -> None:
     """
     Generates a markdown file from a parsed list of sections and phrases.
 
@@ -229,8 +230,8 @@ def generate_output_md_from_phrases(phrases: List[Dict[str, any]], output_file: 
             f.write(f"### {title}\n")
 
             for phrase in section.get("phrases", []):
-                hu = phrase.get("hu", "").strip()
-                sr = phrase.get("sr", "")
+                hu = phrase.get(learn_lang, "").strip()
+                sr = phrase.get(native_lang, "")
                 sr = sr.strip() if sr else ""
                 flags = phrase.get("flags", [])
                 only_learn = phrase.get("only_learn", False)

@@ -20,23 +20,8 @@
               "icon": "lucide-file",
               "title": "README"
             }
-          },
-          {
-            "id": "e7d0eb4ca9a6923f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reparsed.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Reparsed"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -185,12 +170,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "e7d0eb4ca9a6923f",
+  "active": "8742dfd13e302a10",
   "lastOpenFiles": [
-    "README.md",
     "Reparsed.md",
-    "English-kslt.md",
+    "README.md",
     "Only-Reparsed.md",
+    "English-kslt.md",
     "Engleski-test.md",
     "Welcome.md"
   ]

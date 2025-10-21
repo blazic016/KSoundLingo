@@ -9,10 +9,10 @@ python3 -m kslingo audio --markdown ksltest/ksl-vault/English-kslt.md -learn en 
 
 #2 ONLY REPARSE MD
 python3 -m kslingo parse \
-	only-reparse-markdown   
+	only-reparse-markdown \
 	-i ksltest/ksl-vault/English-kslt.md 
 	
-python3 -m kslingo parse only-reparse-markdown -i ksltest/ksl-vault/English-kslt.md && mv output/Only-Reparsed.md ksltest/ksl-vault/ && meld ksltest/ksl-vault/English-kslt.md ksltest/ksl-vault
+python3 -m kslingo parse only-reparse-markdown -i ksltest/ksl-vault/English-kslt.md && mv output/Only-Reparsed.md ksltest/ksl-vault/ && meld ksltest/ksl-vault/English-kslt.md ksltest/ksl-vault/Only-Reparsed.md 
 
 
 ```

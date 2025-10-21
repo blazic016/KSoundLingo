@@ -176,7 +176,7 @@ generisi_madjarski_mp3
 	- oni koji su E da bolduje
 2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
 3. po novom **md2json** ne parsira dobro
-
+	FIXOVANO!
 
 ```
 
@@ -184,24 +184,25 @@ REPARSIRANJE
 python3 -m kslingo parse only-reparse-markdown \
 	-i ksltest/ksl-vault/English-kslt.md \
 	-o ksltest/ksl-vault/Reparsed.md  
+	RADI DOBRO
 
 
 python3 -m kslingo convert md2json     -i ksltest/ksl-vault/Reparsed.md        -learn en -native sr
-	   NE PRETVORI NISTA
+	RADI DOBRO
 	   
  
  
  python3 -m kslingo convert md2json \
 	-i ksltest/ksl-vault/English-kslt.md \
 	-learn en -native sr
-	NE PRETVORI DOBRO
+	RADI DOBRO
  
  
  	
 python3 -m kslingo convert md2json \
 	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
 	-learn hu -native sr
-	PRETVORI DOBRO
+	RADI DOBRO
  
  
 ```

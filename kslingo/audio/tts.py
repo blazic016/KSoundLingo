@@ -30,7 +30,7 @@ def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
     # sanity
     ensure_dir(out_dir)
 
-    phrases = get_phrases_markdown(input_file)
+    phrases = get_phrases_markdown(input_file, learn_lang, native_lang)
 
     if not phrases:
         print("ERROR: phrases is empty array!")
@@ -51,8 +51,8 @@ def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
             # if phrase.get("only_learn"):
             #     continue
 
-            hu = phrase.get("hu", "").strip()
-            sr = phrase.get("sr", "")
+            hu = phrase.get(learn_lang, "").strip()
+            sr = phrase.get(native_lang, "")
             sr = sr.strip() if sr else ""
 
             # if not hu or not sr:
@@ -71,7 +71,7 @@ def Generate_Markdown_Audio_mp3(input_file, out_dir, learn_lang, native_lang):
         generate_mp3_from_phrases(pairs, out_file, learn_lang, native_lang)
 
     out_md=f"{out_dir}/cleaned.md"
-    generate_output_md_from_phrases(phrases, out_md)
+    generate_output_md_from_phrases(phrases, out_md, learn_lang, native_lang)
     
     out_pdf=f"{out_dir}/cleaned.pdf"
     Generate_pdf_from_md(out_md, out_pdf)
