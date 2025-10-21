@@ -175,13 +175,32 @@ def just_only_reparse_md(input_file: str, output_file: str):
             raw = remove_markdown_bold(raw)
             raw = remove_markdown_italic(raw)
             raw = remove_leading_dash(raw)
-            
+
+
+            # Split flags
+            flag_list = [f.strip() for f in flags.split(",") if f.strip()]
+
+            if len(flag_list) > 3:
+                print("Error: Too much flags!")
+                return
+            # elif flag_list[2] == "E":
+            #     print(f"[E-ONLY] third flag = {flag_list[2]}")
+            # else:
+            #     print(f"[ALL FLAGS] {flag_list}")
+
+
             # --- PARSE PHRASE ---
             if " - " in raw:
                 hu, sr = raw.rsplit(" - ", 1)
                 hu = hu.strip()
                 sr = sr.strip()
                 fout.write(f"- %%{flags}%% {hu} - {sr}\n")
+                if flag_list[2] == "E":
+                    # print(f"{flags} {hu} - {sr} | ENABLED")
+                    fout.write(f"- %%{flags}%% **{hu}** - {sr}\n")
+                else:
+                    # print(f"{flags} {hu} - {sr} | DISABLED")
+                    fout.write(f"- %%{flags}%% {hu} - {sr}\n")
             else:
                 fout.write(f"- %%{flags}%% *{raw}*\n")
 

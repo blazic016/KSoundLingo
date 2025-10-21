@@ -1,4 +1,4 @@
-# About script
+****# About script
 
 **KSoundLingo** is a Python-based tool that converts **words and phrases** into **audio files**. It is designed for language learners who want to easily transform written vocabulary into spoken form, making it simple to practice listening, pronunciation, and memorization.
 
@@ -80,6 +80,11 @@ python3 -m kslingo convert json2md \
 python3 -m kslingo convert md2json \
 	-i ksltest/ksl-vault/English-kslt.md \
 	-learn en -native sr
+	
+python3 -m kslingo convert md2json \
+	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
+	-learn hu -native sr
+	
 ```
 
 ### ADD PREFIX ON MARKDOWN
@@ -171,6 +176,41 @@ generisi_madjarski_mp3
 	- oni koji su E da bolduje
 2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
 3. po novom **md2json** ne parsira dobro
+
+
+```
+
+REPARSIRANJE
+python3 -m kslingo parse only-reparse-markdown \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-o ksltest/ksl-vault/Reparsed.md  
+
+
+python3 -m kslingo convert md2json     -i ksltest/ksl-vault/Reparsed.md        -learn en -native sr
+	   NE PRETVORI NISTA
+	   
+ 
+ 
+ python3 -m kslingo convert md2json \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-learn en -native sr
+	NE PRETVORI DOBRO
+ 
+ 
+ 	
+python3 -m kslingo convert md2json \
+	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
+	-learn hu -native sr
+	PRETVORI DOBRO
+ 
+ 
+```
+
+   
+
+
+
+
 4. kada fixujes md2json onda fixuj **json2md**
 5. **json2xlsx**
 6. **xlsx2json**
