@@ -88,11 +88,11 @@ def main():
     elif args.command == "convert":
         ensure_dir(args.o)
         if args.convert_command == "json2md":
-            output_file = f"{args.o}/converted_from_json.md"
+            output_file = f"{args.o}/json2md.md"
             Convert_json2md(args.i, output_file, args.learn, args.native)
 
         elif args.convert_command == "md2json":
-            output_file = f"{args.o}/converted_from_markdown.json"
+            output_file = f"{args.o}/md2json.json"
             Convert_md2json(args.i, output_file, args.learn, args.native)
             
         # elif args.convert_command == "json2csv":
@@ -100,11 +100,11 @@ def main():
         #     Convert_json2csv(args.i, output_file)
 
         elif args.convert_command == "json2xlsx":
-            output_file = f"{args.o}/converted_from_json.xlsx"
+            output_file = f"{args.o}/json2xlsx.xlsx"
             Convert_json2xlsx(args.i, output_file)
 
         elif args.convert_command == "xlsx2json":
-            output_file = f"{args.o}/converted_from_xlsx.json"
+            output_file = f"{args.o}/xlsx2json.json"
             Convert_xlsx2json(args.i, output_file)
 
             
@@ -112,7 +112,6 @@ def main():
         # ensure_dir(args.o) # odnosi se na dir, a sad je file. FIX IT!
         if args.parse_command == "only-reparse-markdown":
             print("Just only markdown reparsing")
-            # Convert_json2md(args.i, output_file, args.learn, args.native)
             just_only_reparse_md(args.i,args.o)
 
          

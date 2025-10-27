@@ -69,8 +69,8 @@ python3 -m kslingo audio \
 *Example:*
 ```bash
 python3 -m kslingo convert json2md \
-	 -i ./templates/template.json 
-	-learn hu -native sr
+	 -i ./output/md2json.json \
+	-learn en -native sr
 ```
 
 ### CONVERT MARKDOWN to JSON
@@ -170,6 +170,24 @@ generisi_madjarski_mp3
   That is the reason why not presneted in category *(.josn file)* field like: `level, enabled, isword`. Every category have translation for every defined language.
 
 
+# Beleske za dokumentaciju
+- **md2json** Kada se radi `md2json` bitno je izabrati opcije `learn en -native sr` jer se od md pravi json, a json ima sve supported jezike, u md fajlu ima samo 2 jezika, i to su bas ta dva koje si odabrao sa opcijom.
+  Namenjeno je za pravljenje inicijalne json baze podataka iz koje ce se imati samo dva jezika, i kasnije tu bazu treba prosirivati na ostale jezike.
+```
+python3 -m kslingo convert md2json     -i ksltest/ksl-vault/Reparsed.md        -learn en -native sr
+	RADI DOBRO
+	   
+ python3 -m kslingo convert md2json \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-learn en -native sr
+	RADI DOBRO
+ 
+python3 -m kslingo convert md2json \
+	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
+	-learn hu -native sr
+	RADI DOBRO
+```
+
 # WHAT TO DO NEXT?
 1. Implement Just Only reparse md 
 	- ako ima 1+ redova razmaka negde da zakuca na tacno 1
@@ -177,7 +195,6 @@ generisi_madjarski_mp3
 2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
 3. po novom **md2json** ne parsira dobro
 	FIXOVANO!
-
 ```
 
 REPARSIRANJE
@@ -185,33 +202,23 @@ python3 -m kslingo parse only-reparse-markdown \
 	-i ksltest/ksl-vault/English-kslt.md \
 	-o ksltest/ksl-vault/Reparsed.md  
 	RADI DOBRO
-
-
-python3 -m kslingo convert md2json     -i ksltest/ksl-vault/Reparsed.md        -learn en -native sr
-	RADI DOBRO
-	   
- 
- 
- python3 -m kslingo convert md2json \
-	-i ksltest/ksl-vault/English-kslt.md \
-	-learn en -native sr
-	RADI DOBRO
- 
- 
- 	
-python3 -m kslingo convert md2json \
-	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
-	-learn hu -native sr
-	RADI DOBRO
- 
- 
 ```
 
-   
-
-
-
-
 4. kada fixujes md2json onda fixuj **json2md**
+   FIXOVANO!!
+```
+python3 -m kslingo convert md2json \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-learn en -native sr && \
+python3 -m kslingo convert json2md \
+	 -i ./output/md2json.json \
+	 -o ./ksltest/ksl-vault \
+	-learn en -native sr
+RADI DOBRO
+
+```
+
+
+
 5. **json2xlsx**
 6. **xlsx2json**

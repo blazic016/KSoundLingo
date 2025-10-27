@@ -23,22 +23,17 @@ from kslingo.support import get_supported_languages
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
-    Converts a structured JSON file to Markdown format with flags for level, type, and enabled state.
-
-    Args:
-        json_path (str): Path to the input JSON file.
-        md_output_path (str): Path to the output Markdown file.
-        learn_lang (str): Language code to be shown first.
-        native_lang (str): Language code to be shown second.
+    Converts a JSON file into Markdown format with flags (%%A2,W,E%%).
+    If enabled=True, the phrase in the learning language is bolded.
+    If isword=True, the flag W is used; otherwise, the flag P is used.
     """
-    
     print("start Convert_json2md")
-    
+
     json_path = Path(json_path)
     md_output_path = Path(md_output_path)
 
     if not json_path.is_file():
-        raise FileNotFoundError(f"Input file '{json_path}' does not exist")
+        raise FileNotFoundError(f"Input file '{json_path}' doesn't exist")
 
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -47,37 +42,60 @@ def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native
 
     for section in data:
         category = section.get("category", {})
-        cat_learn = category.get(learn_lang, "Unknown")
-        cat_native = category.get(native_lang, "Unknown")
+
+        # get learn language
+        cat_learn = category.get(learn_lang)
+        if not cat_learn:
+            cat_learn = category.get("en", "").strip()
+        cat_learn = cat_learn or "Unknown"
+
+        # get native language
+        cat_native = category.get(native_lang, "").strip() or "Unknown"
+
         lines.append(f"### {cat_learn} - {cat_native}")
 
         for phrase in section.get("phrases", []):
             level = phrase.get("level", "A1")
-            isword = phrase.get("isword", False)
             enabled = phrase.get("enabled", False)
-            translations = phrase.get("translations", {})
+            isword = phrase.get("isword", False)
+            translations = phrase.get("translations")
 
-            left = translations.get(learn_lang, "").strip()
-            right = translations.get(native_lang, "").strip()
+            # skip if doesn't valid
+            if not isinstance(translations, dict):
+                continue
+
+            left = translations.get(learn_lang) or translations.get("en")
+            right = translations.get(native_lang)
+            if not left or not right:
+                continue
+
+            left = left.strip()
+            right = right.strip()
             if not left or not right:
                 continue
 
             flag_w_p = "W" if isword else "P"
             flag_e_d = "E" if enabled else "D"
-
             flags = f"%%{level},{flag_w_p},{flag_e_d}%%"
-            line = f"{flags} {left} - {right}"
+
+            # if enabled -> bold
+            if enabled:
+                line = f"- {flags} **{left}** - {right}"
+            else:
+                line = f"- {flags} {left} - {right}"
+
             lines.append(line)
 
-        lines.append("")
+        lines.append("")  # empty line between sections
 
-    ensure_dir(md_output_path.parent)
-    
+    # Create dir if doesn't exist
+    md_output_path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(md_output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    print(f"Created markdown file : {md_output_path}")
-    
+    print(f"Markdown file created: {md_output_path}")
+
 # def add_prefix_on_markdown(md_input_path: str, md_output_path: str, prefix: str = "%%A2,W,D%%") -> None:
 #     """
 #     Adds a given prefix to all phrase lines in a Markdown file, 
