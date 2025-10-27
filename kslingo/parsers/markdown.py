@@ -189,7 +189,6 @@ def just_only_reparse_md(input_file: str, output_file: str):
                 hu, sr = raw.rsplit(" - ", 1)
                 hu = hu.strip()
                 sr = sr.strip()
-                fout.write(f"- %%{flags}%% {hu} - {sr}\n")
                 if flag_list[2] == "E":
                     # print(f"{flags} {hu} - {sr} | ENABLED")
                     fout.write(f"- %%{flags}%% **{hu}** - {sr}\n")
