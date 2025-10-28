@@ -9,7 +9,6 @@ from kslingo.utils.text import normalize_separator
 from kslingo.utils.text import extract_markdown_metadata
 from kslingo.utils.text import remove_between
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.styles import Border, Side
 from openpyxl import load_workbook
@@ -19,6 +18,8 @@ from kslingo.parsers.markdown import get_phrases_markdown
 import markdown
 from weasyprint import HTML
 from kslingo.support import get_supported_languages
+from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
+from openpyxl.utils import get_column_letter
 
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
@@ -276,6 +277,8 @@ def Convert_md2json(
 def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
     print("start Convert_json2xlsx")
 
+    supported_langs = get_supported_languages()
+
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -285,25 +288,10 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
     category_font = Font(size=13, bold=True)
     phrase_font = Font(size=12, bold=False)
 
-    # blue fill on category
-    category_fill = PatternFill(
-        fill_type="solid",
-        fgColor="D9EAF7"
-    )
-    
-    # Red fill for enabled = false (0)
-    red_fill = PatternFill(
-        fill_type="solid",
-        fgColor="FFC7CE"  # svetlo crvena
-    )
+    category_fill = PatternFill(fill_type="solid", fgColor="D9EAF7")
+    red_fill = PatternFill(fill_type="solid", fgColor="FFC7CE")
+    green_fill = PatternFill(fill_type="solid", fgColor="C6EFCE")
 
-    # Green fill for enabled = true (1)
-    green_fill = PatternFill(
-        fill_type="solid",
-        fgColor="C6EFCE"  # svetlo zelena
-    )
-
-    # Grey border between cells
     gray_border = Border(
         left=Side(style="thin", color="B0B0B0"),
         right=Side(style="thin", color="B0B0B0"),
@@ -311,18 +299,17 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
         bottom=Side(style="thin", color="B0B0B0")
     )
 
-
-    # header row 
-    header_row = ["Enabled","Level", "IsWord", "HU", "SR", "EN"]
+    # Header row
+    header_row = ["Enabled", "Level", "IsWord"] + [lang.upper() for lang in supported_langs]
     ws.append(header_row)
     ws.freeze_panes = "A2"
 
-    # Set fixed with on languages
-    ws.column_dimensions["D"].width = 30  # HU
-    ws.column_dimensions["E"].width = 30  # SR
-    ws.column_dimensions["F"].width = 30  # EN
+    # Set fixed width on language columns
+    for i, lang in enumerate(supported_langs, start=4):  # Columns D, E, ...
+        col_letter = get_column_letter(i)
+        ws.column_dimensions[col_letter].width = 30
 
-    # center every cell on header
+    # Center align header
     for cell in ws[1]:
         cell.alignment = Alignment(horizontal="center")
 
@@ -330,13 +317,8 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
         category = block["category"]
         phrases = block["phrases"]
 
-        # CATEGORY ROW (no flags, just translations)
-        category_row = [
-            "", "", "", 
-            category.get("hu", ""),
-            category.get("sr", ""),
-            category.get("en", "")
-        ]
+        # CATEGORY ROW
+        category_row = ["", "", ""] + [category.get(lang, "") for lang in supported_langs]
         ws.append(category_row)
 
         for cell in ws[ws.max_row]:
@@ -344,39 +326,45 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
             cell.fill = category_fill
             cell.border = gray_border
 
-        # PHRASE ROWS
+        # PHRASES
         for phrase in phrases:
             row = [
                 "1" if phrase.get("enabled", False) else "0",
                 phrase.get("level", ""),
                 "1" if phrase.get("isword", False) else "0",
-                phrase["translations"].get("hu", ""),
-                phrase["translations"].get("sr", ""),
-                phrase["translations"].get("en", ""),
+            ] + [
+                phrase["translations"].get(lang, "") for lang in supported_langs
             ]
+
             ws.append(row)
-            
             current_row = ws[ws.max_row]
             is_disabled = row[0] == "0"
 
-            for i, cell in enumerate(ws[ws.max_row], start=1):
-                
-                # apply border
+            for i, cell in enumerate(current_row, start=1):
                 cell.border = gray_border
-                
-                # center flags (first three column)
                 cell.font = phrase_font
-                if i in (1, 2, 3):  # columns: Enabled, Level, IsWord
+                if i in (1, 2, 3):  # Enabled, Level, IsWord
                     cell.alignment = Alignment(horizontal="center")
-                    
-                # colorize if enabled flag = false
-                if is_disabled:
-                    cell.fill = red_fill
-                else:
-                    cell.fill = green_fill
-                    
-        # Empty row after each category section
+
+                cell.fill = red_fill if is_disabled else green_fill
+
+        # Empty row between categories
         ws.append([])
+
+    # Conditional formatting
+    max_row = ws.max_row
+    last_col = get_column_letter(3 + len(supported_langs))  # Example: "F", "G", ...
+    ws.conditional_formatting.add(
+        f"A2:{last_col}{max_row}",
+        FormulaRule(formula=['AND(ISNUMBER($A2), $A2=1)'], fill=green_fill)
+    )
+    ws.conditional_formatting.add(
+        f"A2:{last_col}{max_row}",
+        FormulaRule(formula=['AND(ISNUMBER($A2), $A2=0)'], fill=red_fill)
+    )
+
+    wb.save(xlsx_path)
+    print(f"XLSX saved to {xlsx_path}")
 
 
 

@@ -8,34 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "8742dfd13e302a10",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reparsed.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Reparsed"
-            }
-          },
-          {
-            "id": "3e35a6c85e8eedea",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reparsed.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Reparsed"
-            }
-          },
-          {
             "id": "a2eeca45162c84f4",
             "type": "leaf",
             "state": {
@@ -49,8 +21,7 @@
               "title": "README"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -202,6 +173,7 @@
   "lastOpenFiles": [
     "json2md.md",
     "README.md",
+    "md2json.json",
     "json2md.md/json2md.md",
     "Reparsed.md",
     "Only-Reparsed.md",

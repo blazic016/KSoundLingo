@@ -68,9 +68,17 @@ python3 -m kslingo audio \
 
 *Example:*
 ```bash
-python3 -m kslingo convert json2md \
-	 -i ./output/md2json.json \
-	-learn en -native sr
+
+# ENG
+python3 -m kslingo convert md2json \
+	-i ksltest/ksl-vault/English-kslt.md \
+	-learn en -native sr && \
+	python3 -m kslingo convert json2md \
+		 -i ./output/md2json.json \
+		 -o ./ksltest/ksl-vault \
+		-learn en -native sr
+		
+		
 ```
 
 ### CONVERT MARKDOWN to JSON
@@ -82,7 +90,7 @@ python3 -m kslingo convert md2json \
 	-learn en -native sr
 	
 python3 -m kslingo convert md2json \
-	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md\
+	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md \
 	-learn hu -native sr
 	
 ```
@@ -106,8 +114,21 @@ python3 -m kslingo convert json2csv ./output/converted_from_markdown.json
 
 *Example:*
 ```bash
+
+# EN
+
 python3 -m kslingo convert json2xlsx \
-	-i ./output/converted_from_markdown.json
+	-i ./output/md2json.json
+
+
+
+# HU
+python3 -m kslingo convert md2json \
+	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md \
+	-learn hu -native sr
+python3 -m kslingo convert json2xlsx \
+	-i ./output/md2json.json
+
 ```
 
 ### CONVERT XLSX to JSON
@@ -189,36 +210,4 @@ python3 -m kslingo convert md2json \
 ```
 
 # WHAT TO DO NEXT?
-1. Implement Just Only reparse md 
-	- ako ima 1+ redova razmaka negde da zakuca na tacno 1
-	- oni koji su E da bolduje
-2. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
-3. po novom **md2json** ne parsira dobro
-	FIXOVANO!
-```
-
-REPARSIRANJE
-python3 -m kslingo parse only-reparse-markdown \
-	-i ksltest/ksl-vault/English-kslt.md \
-	-o ksltest/ksl-vault/Reparsed.md  
-	RADI DOBRO
-```
-
-4. kada fixujes md2json onda fixuj **json2md**
-   FIXOVANO!!
-```
-python3 -m kslingo convert md2json \
-	-i ksltest/ksl-vault/English-kslt.md \
-	-learn en -native sr && \
-python3 -m kslingo convert json2md \
-	 -i ./output/md2json.json \
-	 -o ./ksltest/ksl-vault \
-	-learn en -native sr
-RADI DOBRO
-
-```
-
-
-
-5. **json2xlsx**
-6. **xlsx2json**
+1. automatski racuna jel rec ili fraza, ako na learn jeziku ima vise od 2 reci racunaj ga kao frazu u suprotnom kao rec
