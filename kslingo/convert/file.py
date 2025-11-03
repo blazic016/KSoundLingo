@@ -20,7 +20,9 @@ from weasyprint import HTML
 from kslingo.support import get_supported_languages
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
-
+import json
+import pandas as pd
+from collections import defaultdict
 
 def Convert_json2md(json_path: str, md_output_path: str, learn_lang: str, native_lang: str) -> None:
     """
@@ -385,8 +387,11 @@ def Convert_json2xlsx(json_path: str, xlsx_path: str) -> None:
     print(f"XLSX saved to {json_path}")
     
     
+
 def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
     print("start Convert_xlsx2json")
+
+    langs = get_supported_languages()
 
     wb = load_workbook(xlsx_path)
     ws = wb.active
@@ -396,47 +401,55 @@ def Convert_xlsx2json(xlsx_path: str, json_path: str) -> None:
     current_block = None
 
     for row in rows:
-        enabled, level, isword, hu, sr, en = row
-
-        # Empty row — skip
-        if all(cell is None or str(cell).strip() == "" for cell in row):
+        if row is None:
             continue
 
-        # Row with no flags but has translations = CATEGORY
-        if enabled in (None, "", 0) and level in (None, "", 0) and isword in (None, "", 0):
-            # New category block
+        # Ensure row length
+        row = list(row)
+
+        # Extract core flags
+        enabled = row[0]
+        level   = row[1]
+        isword  = row[2]
+
+        # Remaining columns = translations
+        values = row[3 : 3 + len(langs)]
+
+        translations = {lang: "" for lang in langs}
+        for i, lang in enumerate(langs):
+            if i < len(values):
+                translations[lang] = values[i] or ""
+
+        # Check if whole row is empty → skip
+        if all(c is None or str(c).strip() == "" for c in row):
+            continue
+
+        # Category row (no flags)
+        if not enabled and not level and not isword:
             current_block = {
-                "category": {
-                    "hu": hu or "",
-                    "sr": sr or "",
-                    "en": en or ""
-                },
+                "category": translations,
                 "phrases": []
             }
             data.append(current_block)
             continue
 
-        # Otherwise it's a phrase row
+        # Phrase row
         phrase = OrderedDict([
-            ("level", str(level).strip()),
-            ("enabled", str(enabled).strip() == "1"),
-            ("isword", str(isword).strip() == "1"),
-            ("translations", {
-                "hu": hu or "",
-                "sr": sr or "",
-                "en": en or ""
-            })
+            ("level",   (str(level).strip() if level else "")),
+            ("enabled", str(enabled).strip() == "1" or enabled is True),
+            ("isword",  str(isword).strip()  == "1" or isword is True),
+            ("translations", translations)
         ])
 
         if current_block is not None:
             current_block["phrases"].append(phrase)
         else:
-            print("Warning: Phrase row found before any category, skipping")
+            print("WARNING: phrase appeared before first category → skipped")
 
-    # Save to JSON file
     write_json(data, json_path)
 
     print(f"JSON saved to {json_path}")
+
 
 def Generate_pdf_from_md(md_path: str, pdf_path: str) -> str:
     """

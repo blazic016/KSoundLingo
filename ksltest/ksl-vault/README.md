@@ -88,10 +88,17 @@ python3 -m kslingo convert md2json \
 python3 -m kslingo convert md2json \
 	-i ksltest/ksl-vault/English-kslt.md \
 	-learn en -native sr
-	
+
+python3 -m kslingo convert md2json \
+	-i output/Only-Reparsed.md \
+	-learn en -native sr
+
 python3 -m kslingo convert md2json \
 	-i ../KSoundLingo-phw/Obsidian/KSoundLingo-Vault/Madjarski-ksound.md \
 	-learn hu -native sr
+	
+	
+	
 	
 ```
 
@@ -136,8 +143,7 @@ python3 -m kslingo convert json2xlsx \
 *Example:*
 ```bash
 
-python3 -m kslingo convert xlsx2json \
-	-i ./output/converted_from_json.xlsx
+python3 -m kslingo convert xlsx2json -i ./output/json2xlsx.xlsx
 
 ```
 
